@@ -34,40 +34,19 @@ class Shop(models.Model):
         return "{}: id: {}, 位置: {}, 分类: {}, 味道: {}, 服务: {}, 环境: {}".format(self.shopname, self.id,
                                                      self.loc, self.foodtype, self.taste, self.service, self.envi)
 
-'''class Region(models.Model):
-    """
-    regions' data structure
-    one restaurant may belongs to several regions, e.g. Haidian region, Zhongguancun,
-    meanwhile, one region may contain many shops
-    """
-    name = models.CharField(max_length=20)
-    restaurant = models.ManyToManyField(Restaurant)
-
-    def __str__(self):
-        return "{}: id{}".format(self.name, self.id)
-
-
-class Category(models.Model):
-    """
-    restaurant categories' class
-    as for file 'restaurant', similar to Region
-    """
-    name = models.CharField(max_length=20)
-    restaurant = models.ManyToManyField(Restaurant)
-
-    def __str__(self):
-        return "{}: id{}".format(self.name, self.id)'''
-
 
 class Comment(models.Model):
     """
-    reviews' class
-    one restaurant may have many reviews, but one review only belongs to one restaurant
+    comments' class
+    one shop may have many reviews, but one review only belongs to one shop
     same for the 'user' field
+    
+    NOTE: since Comment has a foreign key referencing User, we need to add natural key handling to users' class
+    see https://docs.djangoproject.com/en/1.11/topics/serialization/#natural-keys for detail
     """
     content = models.TextField(max_length=1000)
     shop = models.ForeignKey(Shop)  # shop's urlID
-    # user = models.ForeignKey('User')  # TO DO: check with the User's developer
+    # user = models.ForeignKey('User')  # TO DO: need to add this
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

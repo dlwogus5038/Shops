@@ -1,4 +1,4 @@
-{% extends 'home/base.html' %}
+{% extends 'base.html' %}
 {% load bootstrap3 %}
 
 {% block content %}
@@ -24,7 +24,7 @@
           <tbody class="table">
           {% for shop in shops %}
               <tr>
-                  <td><a href="{% url 'home:home' %}">{{shop}}</a>
+                  <td><a href="{% url 'home:home' %}">{{shop}}</a> <!-- need to replace this with the correct url -->
                       <div class="pull-right">
                           {% bootstrap_icon 'cutlery' %}<b>{{shop.shopname}}</b>
                           {% bootstrap_icon 'star' %}{{shop.shoplevel}}
