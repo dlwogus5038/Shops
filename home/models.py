@@ -4,20 +4,31 @@ from django.db import models
 from django.utils import timezone
 
 
+class ShopManager(models.Manager):
+    def get_by_natural_key(self, urlID):
+        return self.get(urlID=urlID)
+
 class Shop(models.Model):
     """
     shops' data structure
     """
-    shopurl = models.CharField(max_length=100)
-    loc = models.CharField(max_length=20)
+    objects = ShopManager()
+
+    urlID = models.BigIntegerField(default=0)
+    loc = models.CharField(max_length=50)
+    tel = models.CharField(max_length=20, default="")
+    pic = models.URLField(default="")
     shopname = models.CharField(max_length=50)
     service = models.FloatField(default=0)
     taste = models.FloatField(default=0)
-    commentnum = models.IntegerField(default=0)
-    foodtype = models.CharField(max_length=20)
-    shoplevel = models.CharField(max_length=20)
+    foodtype = models.CharField(max_length=50)
+    shoplevel = models.CharField(max_length=50)
     envi = models.FloatField(default=0)
     avgcost = models.IntegerField(default=0.0)
+    street_address = models.CharField(default="", max_length=50)
+
+    class Meta:
+        unique_together = (('urlID',),)
 
     def __str__(self):
         return "{}: id: {}, 位置: {}, 分类: {}, 味道: {}, 服务: {}, 环境: {}".format(self.shopname, self.id,
@@ -54,13 +65,13 @@ class Comment(models.Model):
     one restaurant may have many reviews, but one review only belongs to one restaurant
     same for the 'user' field
     """
-    content = models.TextField(max_length=2000)
-    restaurant = models.ForeignKey(Shop)
+    content = models.TextField(max_length=1000)
+    shop = models.ForeignKey(Shop)  # shop's urlID
     # user = models.ForeignKey('User')  # TO DO: check with the User's developer
-    time = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return "id{}, {}".format(self.id, self.time)
+        return "id{}, {}".format(self.id, self.created_at)
 
 
 

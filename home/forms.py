@@ -1,6 +1,5 @@
 from django import forms
 
-
 class SearchForm(forms.Form):
     LOC = 'LOC'
     FOODTYPE = 'FOODTYPE'
@@ -20,11 +19,12 @@ class SearchForm(forms.Form):
     )
     search_choice = forms.ChoiceField(choices=SEARCH_CHOICES, label='选择搜索方式')
     sort_choice = forms.ChoiceField(choices=SORT_CHOICES, label='选择排序方式')
-    char_input = forms.CharField(max_length=20, label='输入搜索信息')
+    search_input = forms.CharField(max_length=1000, label='输入搜索信息')
+    # text_input = forms.CharField(max_length=1000, label='输入评论内容', widget=forms.Textarea)
 
 
 '''class CharForm(forms.Form):
-    char_input = forms.CharField(max_length=20, label='输入搜索信息')
+    search_input = forms.CharField(max_length=20, label='输入搜索信息')
 
 
 class TextForm(forms.Form):
