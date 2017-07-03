@@ -23,6 +23,9 @@ def home(request):
     search_form = SearchForm()
     return render(request, 'home/home.html', {'search_form': search_form})
 
+def userprofile(request):
+    return render(request, 'home/userprofile.html')
+
 
 '''def search(request):
     if request.method == 'POST':

@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(u'姓名', max_length=32, blank=True, null=False)
+    name = models.CharField(u'姓名', max_length=32, blank=True, null=False , default="无名")
     gender = models.CharField(u'性别',max_length=1, default='男')
     latitude = models.FloatField(u'纬度',default = 40.0, null=False)
     longitude = models.FloatField(u'经度',default = 116.33, null=False)
