@@ -1,5 +1,30 @@
 from django import forms
 
+class UserForm(forms.Form):
+    username = forms.CharField(
+            required=True,
+            widget=forms.TextInput(
+                attrs={
+                    'placeholder': 'Username',
+                }
+            )
+    )
+    password = forms.CharField(
+            required=True,
+            widget=forms.PasswordInput(
+                attrs={
+                    'placeholder': 'Password',
+                }
+            )
+    )
+
+    def clean(self):
+        if not self.is_valid():
+            raise forms.ValidationError(u"用户名和密码为必填项")
+        else:
+            cleaned_data = super(UserForm, self).clean()
+
+
 class SearchForm(forms.Form):
     LOC = 'LOC'
     FOODTYPE = 'FOODTYPE'
