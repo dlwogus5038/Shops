@@ -20,6 +20,7 @@
       {% endif %}
 
       <!--list brief information about restaurants-->
+      {% if not comments %}
       <table>
           <tbody class="table">
           {% for shop in shops %}
@@ -34,7 +35,21 @@
           {% endfor %}
           </tbody>
       </table>
+      {% endif %}
 
+      <table>
+          <tbody class="table">
+          {% for comment in comments %}
+              <tr>
+                  <td>
+                      <div class="pull-right">
+                          {% bootstrap_icon 'comment' %}<b>{{ comment }}</b>
+                      </div>
+                  </td>
+              </tr>
+          {% endfor %}
+          </tbody>
+      </table>
     </div>
 
 {% endblock %}
