@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+
+{% block content %}
+    <div class="container">
+      <div class="page-header">
+        <h1>眼见为食</h1>
+      </div>
+
+      <!--show choose choices and ask for input-->
+      <form action="{% url 'home:home' %}" method="post">
+          {% csrf_token %}
+          {% bootstrap_form search_form %}
+      </form>
+      {% if search_choice and char_input %}
+          <form action="{% url 'home:statistics' search_choice=search_choice char_input=char_input %}" method="post" target="_blank">
+              {% csrf_token %}
+              <input type="submit" value="显示统计信息">
+          </form>
+      {% endif %}
+
+      <!--list brief information about restaurants-->
+      <table>
+          <tbody class="table">
+          {% for shop in shops %}
+              <tr>
+                  <td><a href="{% url 'home:home' %}">{{shop}}</a> <!-- need to replace this with the correct url -->
+                      <div class="pull-right">
+                          {% bootstrap_icon 'cutlery' %}<b>{{shop.shopname}}</b>
+                          {% bootstrap_icon 'star' %}{{shop.shoplevel}}
+                      </div>
+                  </td>
+              </tr>
+          {% endfor %}
+          </tbody>
+      </table>
+
+    </div>
+
+{% endblock %}
