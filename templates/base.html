@@ -42,15 +42,36 @@
               </ul>
             </li>
           </ul>
+
+          <!--login and logout-->
+          <ul class="nav nav-pills pull-right">
+                <!-- need to replace those urls with correct ones -->
+                {% if user.is_authenticated %}
+                    <li role="presentation">
+                        <a href="{% url 'home:home' %}">我的账户</a>
+                    </li>
+                    <li role="presentation">
+                    <a href="{% url 'home:home' %}">登出 (<b>{{user.username}}</b>)</a>
+                    </li>
+                {% else %}
+                    <li role="presentation">
+                        <a href="{% url 'home:home' %}">登录</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="{% url 'home:home' %}">注册</a>
+                    </li>
+                {% endif %}
+            </ul>
         </div><!--/.nav-collapse -->
       </div>
     </nav>
 
-    <!-- Begin page content -->
+    <!-- page content -->
     <div id="container">
       {% block content%}{% endblock %}
     </div>
 
+    <!-- footer -->
     <footer class="footer">
       <div class="container">
         <p class="text-muted">&copy; 2017 眼见为食</p>
