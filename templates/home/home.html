@@ -8,10 +8,13 @@
       </div>
 
       <!-- ask show ranking list or not -->
-      <form action="{% url 'home:ranking-lists' %}" method="post" target="_blank">
-          {% csrf_token %}
-          <input type="submit" value="显示排行榜">
-      </form>
+{#      <form action="{% url 'home:ranking-lists' %}" method="post" target="_blank">#}
+{#          {% csrf_token %}#}
+{#          <button type="button" class="btn btn-basic">显示排行榜</button>#}
+{#      </form>#}
+      <a href="{% url 'home:ranking-lists' %}" target="_blank" class="btn btn-default" role="button">
+          显示排行榜
+      </a>
 
       <!-- show choices and ask for input -->
       <form action="{% url 'home:home' %}" method="post">
@@ -19,26 +22,26 @@
           {% bootstrap_form search_form %}
       </form>
       {% if search_choice and char_input %}
-          <form action="{% url 'home:statistics' search_choice=search_choice char_input=char_input %}" method="post" target="_blank">
-              {% csrf_token %}
-              <input type="submit" value="显示统计信息">
-          </form>
+          <a href="{% url 'home:statistics' search_choice=search_choice char_input=char_input %}" target="_blank" class="btn btn-default" role="button">
+              显示统计信息
+          </a>
       {% endif %}
 
       <!--if search by properties, list brief information about restaurants-->
       {% if not comments %}
       <table>
           <tbody class="table">
-          {% for shop in shops %}
-              <tr>
-                  <td><a href="{% url 'single_shop:single_shop' urlID=shop.urlID %}">{{shop.shopname}}</a> <!-- need to replace this with the correct url -->
-                      <div class="pull-right">
-                          {% bootstrap_icon 'cutlery' %}<b>{{shop.shopname}}</b>
-                          {% bootstrap_icon 'star' %}{{shop.shoplevel}}
-                      </div>
-                  </td>
-              </tr>
-          {% endfor %}
+              <ul class="list-group">
+                  {% for shop in shops %}
+                      <li class="list-group-item">
+                      <a href="{% url 'single_shop:single_shop' id=shop.id %}">{{shop}}</a> <!-- need to replace this with the correct url -->
+                          <div class="pull-right">
+                              {% bootstrap_icon 'cutlery' %}<b>{{shop.taste}}</b>
+                              {% bootstrap_icon 'star' %}{{shop.shoplevel}}
+                          </div>
+                      </li>
+                  {% endfor %}
+              </ul>
           </tbody>
       </table>
       {% endif %}
@@ -46,15 +49,15 @@
       <!-- list comment information -->
       <table>
           <tbody class="table">
-          {% for comment in comments %}
-              <tr>
-                  <td>
-                      <div class="pull-left">
-                          {% bootstrap_icon 'comment' %}<b>{{ comment }}</b>
-                      </div>
-                  </td>
-              </tr>
-          {% endfor %}
+          <div class="list-group">
+              {% for comment in comments %}
+                  <a href="{% url 'single_shop:single_shop' id=comment.shop_id %}" class="list-group-item">{{ comment }} <!-- need to replace this with single shop's url -->
+                      <p class="list-group-item-text">
+                          {% bootstrap_icon 'comment' %}<b>{{ comment.content }}</b>
+                      </p>
+                  </a>
+              {% endfor %}
+          </div>
           </tbody>
       </table>
 

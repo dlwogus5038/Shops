@@ -11,10 +11,18 @@
           <tbody class="table">
           {% for category, list in ranking_lists.items %}
               <ul class="list-group">
-                  <h1 class="list-group-item-heading">{{ category }}榜单</h1>
+                  {% if category == '面' %}
+                      <h1 class="list-group-item-heading">最好吃的面馆</h1>
+                  {% elif category == '肉' %}
+                      <h1 class="list-group-item-heading">无肉不欢榜单</h1>
+                  {% else %}
+                      <h1 class="list-group-item-heading">{{ category }}榜单</h1>
+                  {% endif %}
                   {% for shop in list %}
                       <li class="list-group-item">
-                          {% bootstrap_icon 'cutlery' %}<b>{{ shop.items }}</b>
+                          <a href="{% url 'single_shop:single_shop' id=shop.id %}">
+                              {% bootstrap_icon 'cutlery' %}<b>{{ shop }}</b>
+                          </a> <!-- need to replace this with single shop's url -->
                       </li>
                   {% endfor %}
               </ul>

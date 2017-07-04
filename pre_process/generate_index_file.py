@@ -30,6 +30,7 @@ with open(origin_file, encoding="utf-8") as f:
 dictionary = corpora.Dictionary(comments)
 dictionary.save(dictionary_file)
 
+
 class MyCorpus(object):
     def __iter__(self):
         for line in open(origin_file, encoding="utf-8"):
