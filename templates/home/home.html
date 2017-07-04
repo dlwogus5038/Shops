@@ -34,7 +34,7 @@
               <ul class="list-group">
                   {% for shop in shops %}
                       <li class="list-group-item">
-                      <a href="{% url 'single_shop:single_shop' urlID=shop.urlID %}">{{shop}}</a> <!-- need to replace this with the correct url -->
+                      <a href="{% url 'single_shop:single_shop' id=shop.id %}">{{shop}}</a> <!-- need to replace this with the correct url -->
                           <div class="pull-right">
                               {% bootstrap_icon 'cutlery' %}<b>{{shop.taste}}</b>
                               {% bootstrap_icon 'star' %}{{shop.shoplevel}}

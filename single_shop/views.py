@@ -7,16 +7,16 @@ from django import forms
 import json
 
 
-def single_shop(request, urlID):
-    return render(request, 'single_shop/single_shop.html', {'shop': get_shop_by_id(urlID)})
+def single_shop(request, id):
+    return render(request, 'single_shop/single_shop.html', {'shop': get_shop_by_id(id)})
 
     #if request.method == 'POST':
     #    pass
     #return HttpResponse("Hello, world. You're at the polls index.")
 
 
-def get_shop_by_id(urlID):
-    shop = Shop.objects.get(urlID=urlID)
+def get_shop_by_id(id):
+    shop = Shop.objects.get(urlID=id)
     return shop
 
 
