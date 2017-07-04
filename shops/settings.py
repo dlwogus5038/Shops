@@ -81,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'shops',
         'USER': 'root',
-        'PASSWORD': 'kuaile69123',
+        'PASSWORD': 'qlalfqjsgh12',
     }
 }
 
@@ -131,3 +131,5 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+AUTH_PROFILE_MODULE = 'profiles.UserProfile'
