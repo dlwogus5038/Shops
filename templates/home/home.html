@@ -7,7 +7,13 @@
         <h1><br>眼见为食</h1>
       </div>
 
-      <!--show choose choices and ask for input-->
+      <!-- ask show ranking list or not -->
+      <form action="{% url 'home:ranking-lists' %}" method="post" target="_blank">
+          {% csrf_token %}
+          <input type="submit" value="显示排行榜">
+      </form>
+
+      <!-- show choices and ask for input -->
       <form action="{% url 'home:home' %}" method="post">
           {% csrf_token %}
           {% bootstrap_form search_form %}
@@ -19,7 +25,8 @@
           </form>
       {% endif %}
 
-      <!--list brief information about restaurants-->
+      <!--if search by properties, list brief information about restaurants-->
+      {% if not comments %}
       <table>
           <tbody class="table">
           {% for shop in shops %}
@@ -28,6 +35,22 @@
                       <div class="pull-right">
                           {% bootstrap_icon 'cutlery' %}<b>{{shop.shopname}}</b>
                           {% bootstrap_icon 'star' %}{{shop.shoplevel}}
+                      </div>
+                  </td>
+              </tr>
+          {% endfor %}
+          </tbody>
+      </table>
+      {% endif %}
+
+      <!-- list comment information -->
+      <table>
+          <tbody class="table">
+          {% for comment in comments %}
+              <tr>
+                  <td>
+                      <div class="pull-left">
+                          {% bootstrap_icon 'comment' %}<b>{{ comment }}</b>
                       </div>
                   </td>
               </tr>

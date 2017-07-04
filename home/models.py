@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(u'姓名', max_length=32, blank=True, null=False)
+    name = models.CharField(u'姓名', max_length=32, blank=True, null=False , default="无名")
     gender = models.CharField(u'性别',max_length=1, default='男')
     latitude = models.FloatField(u'纬度',default = 40.0, null=False)
     longitude = models.FloatField(u'经度',default = 116.33, null=False)
@@ -27,9 +27,24 @@ class UserProfile(models.Model):
                 pass
         super(UserProfile, self).save(*args,**kwargs)
 
+
 class ShopManager(models.Manager):
     def get_by_natural_key(self, urlID):
         return self.get(urlID=urlID)
+
+    def count_occurrence(self, classify_by):
+        """
+        custom query function which count the occurrence times of each distinct value in a specified classify_by
+        the 'classify_by' input should be a column name(string)
+        this return a list like:
+        [('中餐', 24), ('西餐', 12), ...]
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT " + classify_by + ", count(*) num FROM home_shop GROUP BY " + classify_by)
+            result = list(cursor.fetchall())
+            result = sorted(result, key=lambda x: -x[1])
+        return result
 
 class Shop(models.Model):
     """
@@ -54,7 +69,7 @@ class Shop(models.Model):
         unique_together = (('urlID',),)
 
     def __str__(self):
-        return "{}: id: {}, 位置: {}, 分类: {}, 味道: {}, 服务: {}, 环境: {}".format(self.shopname, self.id,
+        return "{}\nid: {}\n位置: {}\n分类: {}\n味道: {}\n服务: {}\n环境: {}".format(self.shopname, self.id,
                                                      self.loc, self.foodtype, self.taste, self.service, self.envi)
 
 
@@ -73,7 +88,8 @@ class Comment(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return "id{}, {}".format(self.id, self.created_at)
+        return "id: {},\n内容: {}\n创建时间: {}\n对应店铺id: {}".format(self.id, self.content,
+                                                                         self.created_at, self.shop_id)
 
 
 
