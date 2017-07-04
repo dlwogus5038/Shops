@@ -46,6 +46,7 @@ class ShopManager(models.Manager):
             result = sorted(result, key=lambda x: -x[1])
         return result
 
+
 class Shop(models.Model):
     """
     shops' data structure
