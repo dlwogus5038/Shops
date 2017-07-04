@@ -1,8 +1,10 @@
 from django.shortcuts import render
 
 # Create your views here.
-from .models import Shop, Comment
+from .models import Shop, Comment,ProfileSite
 from .forms import SearchForm
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib.auth.models import User
 import json
 import jieba
 import gensim
@@ -36,8 +38,9 @@ def home(request):
     search_form = SearchForm()
     return render(request, 'home/home.html', {'search_form': search_form})
 
-def userprofile(request):
-    return render(request, 'home/userprofile.html')
+def userprofile(request, username):
+    profile = ProfileSite.objects.get(username=username)
+    return render(request, 'home/userprofile.html', {'profile' : profile })
 
 
 def search_by_property(search_choice, sort_choice, char_input):

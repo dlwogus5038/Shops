@@ -1,4 +1,5 @@
 from django import forms
+from .models import ProfileSite
 
 class UserForm(forms.Form):
     username = forms.CharField(
@@ -23,6 +24,11 @@ class UserForm(forms.Form):
             raise forms.ValidationError(u"用户名和密码为必填项")
         else:
             cleaned_data = super(UserForm, self).clean()
+
+class ProfileSiteForm(forms.ModelForm):
+    class Meta:
+        model = ProfileSite
+        fields = ('userID','username','email','gender','latitude','longitude')
 
 
 class SearchForm(forms.Form):
