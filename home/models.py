@@ -64,6 +64,8 @@ def create_profile_site(sender, instance, created, **kwargs):
     if created:
         profile_site = ProfileSite()
         profile_site.user = instance
+        profile_site.username = instance.username
+        profile_site.email = instance.email
         profile_site.save()
 
 post_save.connect(create_profile_site, sender=User)
