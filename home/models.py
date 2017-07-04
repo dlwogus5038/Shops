@@ -12,19 +12,14 @@ class ShopManager(models.Manager):
         """
         custom query function which count the occurrence times of each distinct value in a specified classify_by
         the 'classify_by' input should be a column name(string)
-        this return a table like:
-        -----------------------------------------------------------------------------
-        |classify_by                              |num                               |
-        -----------------------------------------------------------------------------
-        |the distinct value of column classify_by |row number of rows with this value|
-        -----------------------------------------------------------------------------
-        |...                                      |                                  |
-        -----------------------------------------------------------------------------
+        this return a list like:
+        [('中餐', 24), ('西餐', 12), ...]
         """
         from django.db import connection
         with connection.cursor() as cursor:
-            cursor.execute("SELECT " + classify_by + ", count(*) num FROM shops GROUP BY " + classify_by)
-        result = sorted([row for row in cursor.fetchall()], key=lambda x: -x['num'])
+            cursor.execute("SELECT " + classify_by + ", count(*) num FROM home_shop GROUP BY " + classify_by)
+            result = list(cursor.fetchall())
+            result = sorted(result, key=lambda x: -x[1])
         return result
 
 class Shop(models.Model):
@@ -50,7 +45,7 @@ class Shop(models.Model):
         unique_together = (('urlID',),)
 
     def __str__(self):
-        return "{}: id: {}, 位置: {}, 分类: {}, 味道: {}, 服务: {}, 环境: {}".format(self.shopname, self.id,
+        return "{}\nid: {}\n位置: {}\n分类: {}\n味道: {}\n服务: {}\n环境: {}".format(self.shopname, self.id,
                                                      self.loc, self.foodtype, self.taste, self.service, self.envi)
 
 
@@ -69,7 +64,7 @@ class Comment(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return "id: {}, content: {}, created at: {}, shop id: {}".format(self.id, self.content,
+        return "id: {},\n内容: {}\n创建时间: {}\n对应店铺id: {}".format(self.id, self.content,
                                                                          self.created_at, self.shop_id)
 
 

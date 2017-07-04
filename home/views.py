@@ -15,6 +15,8 @@ index_file = 'pre_process/comment_index.index'
 shop_ids_file = 'pre_process/comment_ids.txt'
 # comment_file = 'pre_process/comments.txt'
 # stop_words_file = 'pre_process/stop_words.txt'
+ranking_list_num = 3
+max_ranking_list_size = 20
 
 
 def home(request):
@@ -92,19 +94,19 @@ def show_ranking_lists(request):
     """
     show ranking lists of typical foodtypes, e.g. 西餐厅排行榜
     """
-    ranking_list_num = 3
     classify_by = 'foodtype'
     order_by = 'taste'
     # calculate shop num of categories, and show the following type of shops:
     categories_count = Shop.objects.count_occurrence(classify_by=classify_by)[:ranking_list_num]
-    shops = Shop.objects.all().order_by(order_by)
-    ranking_lists = []
+    shops = Shop.objects.all().order_by('-' + order_by).values()
+    ranking_lists = {}
     for category in categories_count:
         ranking_list = []
         for shop in shops:
-            if shop[classify_by] == category[classify_by]:
+            if shop[classify_by] == category[0]:
+                shop = {'分类': shop[classify_by], '店名': shop['shopname'], '评分': shop[order_by]}
                 ranking_list.append(shop)
-        ranking_lists.append(ranking_list)
+        ranking_lists[category[0]] = ranking_list[:max_ranking_list_size]
     return render(request, 'home/ranking_lists.html', {'ranking_lists': ranking_lists})
 
 
