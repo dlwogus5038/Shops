@@ -16,7 +16,7 @@ def single_shop(request, id):
 
 
 def get_shop_by_id(id):
-    shop = Shop.objects.get(urlID=id)
+    shop = Shop.objects.get(id=id)
     return shop
 
 
