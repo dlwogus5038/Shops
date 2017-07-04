@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+
+{% block content %}
+    <div class="container">
+      <div class="page-header">
+        <h1>排行榜</h1>
+      </div>
+      
+      <table>
+          <tbody class="table">
+          {% for category, list in ranking_lists.items %}
+              <ul class="list-group">
+                  <h1 class="list-group-item-heading">{{ category }}榜单</h1>
+                  {% for shop in list %}
+                      <li class="list-group-item">
+                          {% bootstrap_icon 'cutlery' %}<b>{{ shop.items }}</b>
+                      </li>
+                  {% endfor %}
+              </ul>
+          {% endfor %}
+          </tbody>
+      </table>
+    
+    </div>
+{% endblock %}
