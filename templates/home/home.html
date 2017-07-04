@@ -4,7 +4,7 @@
 {% block content %}
     <div class="container">
       <div class="page-header">
-        <h1>眼见为食</h1>
+        <h1><br>眼见为食</h1>
       </div>
 
       <!-- ask show ranking list or not -->
@@ -31,7 +31,7 @@
           <tbody class="table">
           {% for shop in shops %}
               <tr>
-                  <td><a href="{% url 'home:home' %}">{{shop}}</a> <!-- need to replace this with the correct url -->
+                  <td><a href="{% url 'single_shop:single_shop' urlID=shop.urlID %}">{{shop.shopname}}</a> <!-- need to replace this with the correct url -->
                       <div class="pull-right">
                           {% bootstrap_icon 'cutlery' %}<b>{{shop.shopname}}</b>
                           {% bootstrap_icon 'star' %}{{shop.shoplevel}}

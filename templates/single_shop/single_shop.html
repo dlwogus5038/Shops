@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+
+{% block content %}
+    <div class="container">
+      <div class="page-header">
+        <h1><br>{{shop.shopname}}</h1>
+      </div>
+
+      <!--list brief information about restaurants-->
+      <table>
+          <tbody class="table">
+            <img src={{shop.pic}}  alt={{shop.shopname}} /><br>
+            <h4>
+                <p>地址：{{shop.street_address}}</p>
+                <p>联系电话：{{shop.tel}}</p>
+                <p>星级：{% bootstrap_icon 'star' %}{{shop.shoplevel}}</p>
+                <p>人均消费：{{ shop.avgcost }}元</p>
+                <p>评分： 口味{{ shop.taste }} | 环境{{ shop.envi }} | 服务{{ shop.service }}</p>
+            </h4>
+          </tbody>
+      </table>
+
+    </div>
+
+{% endblock %}

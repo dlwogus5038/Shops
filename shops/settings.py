@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'home.apps.homeConfig',
+    'single_shop.apps.SingleShopConfig',
     'bootstrap3',
 ]
 
