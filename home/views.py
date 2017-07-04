@@ -82,7 +82,7 @@ def search_by_comment(search_input):
 
     index = gensim.similarities.Similarity.load(index_file)
     sims = index[query_lsi]
-    max_shop_num = 50
+    max_shop_num = 20
     sims = sorted(enumerate(sims), key=lambda item: -item[1])[:max_shop_num]
 
     comment_ids = []
@@ -94,22 +94,29 @@ def search_by_comment(search_input):
 
 
 def show_ranking_lists(request):
-    """
-    show ranking lists of typical foodtypes, e.g. 西餐厅排行榜
-    """
-    classify_by = 'foodtype'
     order_by = 'taste'
-    # calculate shop num of categories, and show the following type of shops:
-    categories_count = Shop.objects.count_occurrence(classify_by=classify_by)[:ranking_list_num]
-    shops = Shop.objects.all().order_by('-' + order_by).values()
+    shops = Shop.objects.all().order_by('-' + order_by)
     ranking_lists = {}
+
+    # ranking lists of typical food, e.g. 最好吃的面馆
+    food = '面'
+    ranking_list = shops.filter(shopname__contains=food)
+    ranking_lists[food] = ranking_list
+    food = '肉'
+    ranking_list = shops.filter(shopname__contains=food)
+    ranking_lists[food] = ranking_list
+
+    # ranking lists of typical types, e.g. 西餐排行榜
+    # calculate shop num of categories, and show the following type of shops:
+    categories_count = Shop.objects.count_occurrence(classify_by='foodtype')[:ranking_list_num]
     for category in categories_count:
-        ranking_list = []
-        for shop in shops:
-            if shop[classify_by] == category[0]:
-                shop = {'分类': shop[classify_by], '店名': shop['shopname'], '评分': shop[order_by]}
-                ranking_list.append(shop)
-        ranking_lists[category[0]] = ranking_list[:max_ranking_list_size]
+        # ranking_list = []
+        # for shop in shops:
+        #     if shop[classify_by] == category[0]:
+        #         shop = {'分类': shop[classify_by], '店名': shop['shopname'], '评分': shop[order_by]}
+        #         ranking_list.append(shop)
+        # ranking_lists[category[0]] = ranking_list[:max_ranking_list_size]
+        ranking_lists[category[0]] = shops.filter(foodtype=category[0])
     return render(request, 'home/ranking_lists.html', {'ranking_lists': ranking_lists})
 
 

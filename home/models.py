@@ -69,8 +69,7 @@ class Shop(models.Model):
         unique_together = (('urlID',),)
 
     def __str__(self):
-        return "{}\nid: {}\n位置: {}\n分类: {}\n味道: {}\n服务: {}\n环境: {}".format(self.shopname, self.id,
-                                                     self.loc, self.foodtype, self.taste, self.service, self.envi)
+        return "{}: id: {}, 位置: {}, 分类: {}".format(self.shopname, self.id, self.loc, self.foodtype)
 
 
 class Comment(models.Model):
@@ -88,8 +87,7 @@ class Comment(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return "id: {},\n内容: {}\n创建时间: {}\n对应店铺id: {}".format(self.id, self.content,
-                                                                         self.created_at, self.shop_id)
+        return "id: {}, 创建时间: {}, 对应店铺id: {}".format(self.id, self.created_at, self.shop_id)
 
 
 
