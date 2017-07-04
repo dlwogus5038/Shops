@@ -27,6 +27,7 @@ class UserProfile(models.Model):
                 pass
         super(UserProfile, self).save(*args,**kwargs)
 
+
 class ShopManager(models.Manager):
     def get_by_natural_key(self, urlID):
         return self.get(urlID=urlID)
