@@ -8,6 +8,25 @@ class ShopManager(models.Manager):
     def get_by_natural_key(self, urlID):
         return self.get(urlID=urlID)
 
+    def count_occurrence(self, classify_by):
+        """
+        custom query function which count the occurrence times of each distinct value in a specified classify_by
+        the 'classify_by' input should be a column name(string)
+        this return a table like:
+        -----------------------------------------------------------------------------
+        |classify_by                              |num                               |
+        -----------------------------------------------------------------------------
+        |the distinct value of column classify_by |row number of rows with this value|
+        -----------------------------------------------------------------------------
+        |...                                      |                                  |
+        -----------------------------------------------------------------------------
+        """
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT " + classify_by + ", count(*) num FROM shops GROUP BY " + classify_by)
+        result = sorted([row for row in cursor.fetchall()], key=lambda x: -x['num'])
+        return result
+
 class Shop(models.Model):
     """
     shops' data structure
@@ -50,7 +69,8 @@ class Comment(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return "id{}, {}".format(self.id, self.created_at)
+        return "id: {}, content: {}, created at: {}, shop id: {}".format(self.id, self.content,
+                                                                         self.created_at, self.shop_id)
 
 
 

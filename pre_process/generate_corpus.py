@@ -1,7 +1,7 @@
 import pymysql.cursors
 
 comments = 'comments.txt'
-shop_ids = 'shop_ids.txt'
+comment_ids = 'comment_ids.txt'
 
 connection = pymysql.connect(host='localhost',
                              user='root',
@@ -11,11 +11,11 @@ connection = pymysql.connect(host='localhost',
                              cursorclass=pymysql.cursors.DictCursor)
 try:
     with connection.cursor() as cursor:
-        sql = "SELECT `content`, `shop_id` FROM `home_comment`"
+        sql = "SELECT `id`, `content` FROM `home_comment`"
         cursor.execute(sql)
         # debug
         with open(comments, 'w') as fc:
-            with open(shop_ids, 'w') as fs:
+            with open(comment_ids, 'w') as fs:
                 comment = ""
                 shop_id = 0
                 while True:
@@ -23,7 +23,7 @@ try:
                     if not temp == None:
                         comment = temp['content'] + "\n"
                         fc.write(comment)
-                        shop_id = str(temp['shop_id']) + "\n"
+                        shop_id = str(temp['id']) + "\n"
                         fs.write(shop_id)
                     else:
                         break

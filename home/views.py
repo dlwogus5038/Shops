@@ -6,15 +6,15 @@ from .forms import SearchForm
 import json
 import jieba
 import gensim
-from pre_process.generate_index_file_defs import get_stop_words
+# from pre_process.generate_index_file_defs import get_stop_words
 
 
 dictionary_file = 'pre_process/comment_dictionary.dict'
 lsi_file = 'pre_process/comment_lsi.lsi'
 index_file = 'pre_process/comment_index.index'
-shop_ids_file = 'pre_process/shop_ids.txt'
-comment_file = 'pre_process/comments.txt'
-stop_words_file = 'pre_process/stop_words.txt'
+shop_ids_file = 'pre_process/comment_ids.txt'
+# comment_file = 'pre_process/comments.txt'
+# stop_words_file = 'pre_process/stop_words.txt'
 
 
 def home(request):
@@ -28,9 +28,8 @@ def home(request):
                 return render(request, 'home/home.html', {'search_form': search_form, 'search_choice': search_choice, 'char_input': search_input,
                                                           'shops': search_by_property(search_choice, sort_choice, search_input)})
             elif search_choice == 'COMMENT':  # search by content
-                comments, shops = search_by_comment(search_input, sort_choice)
-                return render(request, 'home/home.html', {'search_form': search_form,
-                                                          'comments': comments, 'shops': shops})
+                comments = search_by_comment(search_input)
+                return render(request, 'home/home.html', {'search_form': search_form, 'comments': comments})
             return render(request, 'home/home.html', {'search_form': search_form})
     search_form = SearchForm()
     return render(request, 'home/home.html', {'search_form': search_form})
@@ -67,11 +66,11 @@ def show_statistics(request, search_choice, char_input):
     return render(request, 'home/statistics.html', {'statistics': json.dumps(statistics_json)})
 
 
-def search_by_comment(search_input, sort_choice):
+def search_by_comment(search_input):
     # pre-procession
     words = jieba.cut(search_input)
-    stop_words_list = get_stop_words(stop_words_file)
-    words = [word for word in words if not word in stop_words_list]
+    # stop_words_list = get_stop_words(stop_words_file)
+    # words = [word for word in words if not word in stop_words_list]
     dictionary = gensim.corpora.Dictionary.load(dictionary_file)
     lsi = gensim.models.LsiModel.load(lsi_file)
     query_lsi = lsi[dictionary.doc2bow(words)]
@@ -81,16 +80,34 @@ def search_by_comment(search_input, sort_choice):
     max_shop_num = 50
     sims = sorted(enumerate(sims), key=lambda item: -item[1])[:max_shop_num]
 
-    comments = []
-    with open(comment_file) as f:
-       lines = f.readlines()
-       comments = [lines[item[0]] for item in sims]
-    shop_ids = []
+    comment_ids = []
     with open(shop_ids_file) as f:
        lines = f.readlines()
-       shop_ids = [int(lines[item[0]]) for item in sims]
-    shops = Shop.objects.filter(pk__in=shop_ids).order_by(sort_choice.lower())
-    return comments, shops
+       comment_ids = [int(lines[item[0]]) for item in sims]
+    comments = Comment.objects.filter(pk__in=comment_ids)
+    return comments
+
+
+def show_ranking_lists(request):
+    """
+    show ranking lists of typical foodtypes, e.g. 西餐厅排行榜
+    """
+    ranking_list_num = 3
+    classify_by = 'foodtype'
+    order_by = 'taste'
+    # calculate shop num of categories, and show the following type of shops:
+    categories_count = Shop.objects.count_occurrence(classify_by=classify_by)[:ranking_list_num]
+    shops = Shop.objects.all().order_by(order_by)
+    ranking_lists = []
+    for category in categories_count:
+        ranking_list = []
+        for shop in shops:
+            if shop[classify_by] == category[classify_by]:
+                ranking_list.append(shop)
+        ranking_lists.append(ranking_list)
+    return render(request, 'home/ranking_lists.html', {'ranking_lists': ranking_lists})
+
+
 
 
 
