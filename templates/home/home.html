@@ -34,7 +34,7 @@
               <ul class="list-group">
                   {% for shop in shops %}
                       <li class="list-group-item">
-                      <a href="{% url 'single_shop:single_shop' urlID=shop.urlID %}">{{shop}}</a> <!-- need to replace this with the correct url -->
+                      <a href="{% url 'single_shop:single_shop' id=shop.id %}">{{shop}}</a> <!-- need to replace this with the correct url -->
                           <div class="pull-right">
                               {% bootstrap_icon 'cutlery' %}<b>{{shop.taste}}</b>
                               {% bootstrap_icon 'star' %}{{shop.shoplevel}}
@@ -51,7 +51,7 @@
           <tbody class="table">
           <div class="list-group">
               {% for comment in comments %}
-                  <a href="{% url 'home:home' %}" class="list-group-item">{{ comment }} <!-- need to replace this with single shop's url -->
+                  <a href="{% url 'single_shop:single_shop' id=comment.shop_id %}" class="list-group-item">{{ comment }} <!-- need to replace this with single shop's url -->
                       <p class="list-group-item-text">
                           {% bootstrap_icon 'comment' %}<b>{{ comment.content }}</b>
                       </p>
