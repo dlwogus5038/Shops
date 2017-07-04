@@ -2,7 +2,30 @@ from django.db import models
 
 # Create your models here.
 from django.utils import timezone
+from django.db import models
+from django.contrib.auth.models import User
 
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    name = models.CharField(u'姓名', max_length=32, blank=True, null=False)
+    gender = models.CharField(u'性别',max_length=1, default='男')
+    latitude = models.FloatField(u'纬度',default = 40.0, null=False)
+    longitude = models.FloatField(u'经度',default = 116.33, null=False)
+
+    class Meta:
+        db_table = 'Profile'
+        verbose_name = u'用户详情'
+        verbose_name_plural = u"用户详情"
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            try:
+                p = UserProfile.objects.get(user=self.user)
+                self.pk = p.pk
+            except UserProfile.DoesNotExist:
+                pass
+        super(UserProfile, self).save(*args,**kwargs)
 
 class ShopManager(models.Manager):
     def get_by_natural_key(self, urlID):
