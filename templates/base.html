@@ -48,7 +48,7 @@
                 <!-- need to replace those urls with correct ones -->
                 {% if user.is_authenticated %}
                     <li role="presentation">
-                        <a href="{% url 'home:userprofile' %}">我的账户</a>
+                        <a href="{% url 'home:userprofile' user.profilesite.username %}">我的账户</a>
                     </li>
                     <li role="presentation">
                     <a href="{% url 'home:logout' %}">登出 (<b>{{user.username}}</b>)</a>
@@ -68,7 +68,7 @@
 
     <!-- page content -->
     <div id="container">
-      {% block content%}{% endblock %}
+      {% block content %}{% endblock %}
     </div>
 
     <!-- footer -->
