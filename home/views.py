@@ -36,6 +36,9 @@ def home(request):
     search_form = SearchForm()
     return render(request, 'home/home.html', {'search_form': search_form})
 
+def userprofile(request):
+    return render(request, 'home/userprofile.html')
+
 
 def search_by_property(search_choice, sort_choice, char_input):
     shops = []  # show shop information
