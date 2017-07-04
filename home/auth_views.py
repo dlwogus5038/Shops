@@ -2,7 +2,7 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from .models import UserProfile
+from .models import UserProfile,ProfileSite
 
 
 def login(request):
@@ -41,6 +41,15 @@ def signup_submit(request):
         profile.name = name
         profile.gender = gender
         profile.save()
+
+        profile_site = ProfileSite()
+        profile_site.user = user
+        profile_site.user_id = user.id
+        profile_site.username = username
+        profile_site.name = name
+        profile_site.email = email
+        profile_site.gender = gender
+        profile_site.save()
         return redirect('home:login')
 
     except:

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'home.apps.homeConfig',
+    'single_shop.apps.SingleShopConfig',
     'bootstrap3',
 ]
 
@@ -80,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'shops',
         'USER': 'root',
-        'PASSWORD': '1234',
+        'PASSWORD': 'qlalfqjsgh12',
     }
 }
 
