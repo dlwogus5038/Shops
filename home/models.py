@@ -36,6 +36,17 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 post_save.connect(create_user_profile, sender=User)
 
+class MyFriend(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    friend_ID = models.CharField(u'好友ID', max_length=32, blank=True, null=False, default="无名")
+    create_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        db_table = 'MyFriend'
+        verbose_name = u'好友'
+        verbose_name_plural = u'好友'
+
+
 class ProfileSite(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     userID = models.IntegerField(default=0)

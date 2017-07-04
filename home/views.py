@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
-from .models import Shop, Comment,ProfileSite
+from .models import Shop, Comment,ProfileSite,MyFriend
 from .forms import SearchForm
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.models import User
@@ -115,7 +115,11 @@ def show_ranking_lists(request):
         ranking_lists[category[0]] = ranking_list[:max_ranking_list_size]
     return render(request, 'home/ranking_lists.html', {'ranking_lists': ranking_lists})
 
-
+def make_friend(request, user_ID):
+    friend = MyFriend()
+    friend.user = request.user
+    friend.friend_ID = user_ID
+    friend.save()
 
 
 

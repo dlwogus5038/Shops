@@ -50,7 +50,10 @@ def signup_submit(request):
         profile_site.email = email
         profile_site.gender = gender
         profile_site.save()
-        return redirect('home:login')
+
+        user = auth.authenticate(request, username=username, password=password)
+        auth.login(request, user)
+        return redirect('home:home')
 
     except:
         return redirect('home:signup')

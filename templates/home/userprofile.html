@@ -4,7 +4,7 @@
 {% block content %}
     <div class="container">
       <div class="page-header">
-        <h1>我的账户</h1>
+        <h1><br>{{ profile.username }}的账户</h1>
       </div>
       <ul>
           <li>用户ID = {{ profile.username }}</li>
@@ -12,6 +12,9 @@
           <li>用户电子邮件地址 = {{ profile.email }}</li>
           <li>用户性别 = {{ profile.gender }}</li>
           <li>用户所在的位置 ( 经度 = {{ profile.longitude }} , 纬度 = {{ profile.latitude }} )</li>
+          {% if user.username != profile.username %}
+          {# <a href="{% url 'home:make_friend' user.username %}" class="btn btn-primary btn-lg active" role="button">添加好友</a>#}
+          {% endif %}
       </ul>
     </div>
 {% endblock %}
