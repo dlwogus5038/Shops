@@ -16,7 +16,7 @@ stop_words_file = 'stop_words.txt'
 
 stop_words = get_stop_words(stop_words_file)
 comments = []
-with open(origin_file) as f:
+with open(origin_file, encoding="utf-8") as f:
     lines = f.readlines()
     for document in lines:
         # for each comment(holds one line)
@@ -32,7 +32,7 @@ dictionary.save(dictionary_file)
 
 class MyCorpus(object):
     def __iter__(self):
-        for line in open(origin_file):
+        for line in open(origin_file, encoding="utf-8"):
             yield dictionary.doc2bow(jieba.cut(line))
 
 corpus = MyCorpus()
