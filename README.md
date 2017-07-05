@@ -1,5 +1,5 @@
 # Shops
-注意：fork我的项目后，不要动master分支，在本地要有一个dev分支，和你github上的dev分支关联，平时工作在master和dev以外的分支进行，之后merge到dev上，推送到你的仓库，再向我发起pull request。我的master分支只发布稳定版本
+更新了.gitignore，现在该屏蔽的应该已经屏蔽了。要重新跑一下generate_index_file.py生成按评论搜索需要的索引文件，以后再pull应该就不用重新生成了
 
 工程结构：
 项目目录：shops
@@ -8,7 +8,6 @@
 静态文件：static
 模版：templates
 做店铺搜索要用到的预处理文件：pre_process（这个可以无视）
-不要删工程目录下的pre_process.0，那个是做搜索要用的
 
 关于模版：对每个app在templates中建一个对应的子目录，把模版放那里面。建议都继承base.html，这样样式比较统一
 关于url：我们统一采用'app-namespace:url-name'格式的url定位到模版，可以参照home/urls.py的写法
@@ -21,4 +20,3 @@
 
 tips：
 需要有这几个库：gensim, jieba, chardet
-在pycharm打开你的工程可能会发现project那一栏好多文件都没有显示，我这边是把项目目录里的.idea文件夹（是一个隐藏文件夹）删掉，然后重新打开就没问题了
