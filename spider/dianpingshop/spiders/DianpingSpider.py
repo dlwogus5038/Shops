@@ -189,7 +189,7 @@ class DianpingSpider(CrawlSpider):
         if current_page+1 > maxpage:
             yield item
             return
-        request = Request(url[:url_len-1] + str(current_page+1), callback=self.parse_comments)
+        request = Request(currenturl[:url_len-1] + str(current_page+1), callback=self.parse_comments)
         request.meta['item'] = item
         request.meta['maxpage'] = maxpage
         request.meta['current_page'] = current_page
