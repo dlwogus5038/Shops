@@ -3,6 +3,13 @@ import pymysql.cursors
 comments = 'comments.txt'
 comment_ids = 'comment_ids.txt'
 
+
+def is_valid(comment):
+    if comment is not None and not comment == "":
+        return True
+    return False
+
+
 connection = pymysql.connect(host='localhost',
                              user='root',
                              password='1234',
@@ -20,12 +27,12 @@ try:
                 shop_id = 0
                 while True:
                     temp = cursor.fetchone()
-                    if not temp == None:
+                    if temp is not None and is_valid(temp['content']):
                         comment = temp['content'] + "\n"
                         fc.write(comment)
                         shop_id = str(temp['id']) + "\n"
                         fs.write(shop_id)
-                    else:
+                    if temp is None:
                         break
 finally:
     connection.close()
