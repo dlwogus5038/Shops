@@ -20,11 +20,13 @@ class DianpingSpider(CrawlSpider):
 
     start_urls=['http://www.dianping.com/search/category/2/10']
 
-    location=['r2580','r1471','r2578','r1466','r1470','r1469','r2078','r1489','r1488','r2579','r2871','r1475','r1467','r1481','r1465','r2583']
+    #location=['r2580','r1471','r2578','r1466','r1470','r1469','r2078','r1489','r1488','r2579','r2871','r1475','r1467','r1481','r1465','r2583']
 
-    foodtype=['g110','g132','g508','g117','g113','g112','g111','g116','g311','g114','g101','g103','g102','g104',
-'g108','g109','g3243','g26481','g115','g1783','g248','g105','g26483','g246','g106','g1845','g118','g251','g219','g1817','g1338','g250','g26482', 'g107']
+    #foodtype=['g110','g132','g508','g117','g113','g112','g111','g116','g311','g114','g101','g103','g102','g104',
+#'g108','g109','g3243','g26481','g115','g1783','g248','g105','g26483','g246','g106','g1845','g118','g251','g219','g1817','g1338','g250','g26482', 'g107']
 
+    location = ['r2580', ]
+    foodtype = ['g110', ]
 
     ## 爬取顺序:
     ## 1. 先爬取基础数据结构 location, foodtype  --> 独立
@@ -108,7 +110,7 @@ class DianpingSpider(CrawlSpider):
         tel = div.xpath('p/span[2]/text()').extract_first()
         item['tel'] = tel
 
-        div_comments = selector.xpath('//ul[@class="comment-list J-list"]/li')
+        #div_comments = selector.xpath('//ul[@class="comment-list J-list"]/li')
         comments = []
         '''
         for comment in div_comments:
@@ -126,11 +128,14 @@ class DianpingSpider(CrawlSpider):
         '''
         item['comments'] = comments
 
-        commenturl = selector.xpath('//p[@class="comment-all"]/a/@href')
-
-        request = Request(commenturl, callback=parse_comments_list_first)
-        request.meta['item'] = item
-        yield request
+        relativeurl = str(selector.xpath('//p[@class="comment-all"]/a/@href').extract_first())
+        if relativeurl == '':
+            yield item
+        else:
+            commenturl = 'http://www.dianping.com' + relativeurl
+            request = Request(commenturl, callback=self.parse_comments_list_first)
+            request.meta['item'] = item
+            yield request
 
     def parse_list_first(self, response):
 
@@ -153,23 +158,28 @@ class DianpingSpider(CrawlSpider):
         selector = Selector(response)
         item = response.meta['item']
         url = str(response.url)
-        pages = selector.xpath('//a[@class="PageLink"]').extract()
+        pages = selector.xpath('//a[@class="PageLink"]/text()').extract()
         print pages
-        maxpage = int(pages[-1])
-        request = Request(url + 'review_more?pageno=1', callback=parse_comments_list_first)
+        if len(pages) == 0:
+            maxpage = 1
+        else:
+            maxpage = int(pages[-1])
+        request = Request(url + '?pageno=1', callback=self.parse_comments)
         request.meta['item'] = item
         request.meta['maxpage'] = maxpage
         request.meta['current_page'] = 1
         request.meta['comments_num'] = 0
         yield request
 
-    def prase_comments(self, response):
+    def parse_comments(self, response):
         selector = Selector(response)
+        currenturl = str(response.url)
+        url_len = len(currenturl)
         item = response.meta['item']
         maxpage = response.meta['maxpage']
         current_page = response.meta['current_page'] + 1
         comments_num = response.meta['comments_num']
-        new_comments = selector.xpath('//div[@class=""J_brief-cont]/text()').extract()
+        new_comments = selector.xpath('//div[@class="J_brief-cont"]/text()').extract()
         for comment in new_comments:
             item['comments'].append(comment)
             comments_num = comments_num + 1
@@ -179,7 +189,7 @@ class DianpingSpider(CrawlSpider):
         if current_page+1 > maxpage:
             yield item
             return
-        request = Request(url + 'review_more?pageno=' + str(current_page+1), callback=parse_comments_list_first)
+        request = Request(url[:url_len-1] + str(current_page+1), callback=self.parse_comments)
         request.meta['item'] = item
         request.meta['maxpage'] = maxpage
         request.meta['current_page'] = current_page
