@@ -58,3 +58,5 @@ lsi.save(lsi_file)
 
 index = similarities.Similarity(os.path.abspath(os.path.dirname(__file__)), lsi[corpus], num_features=topics_num)
 index.save(index_file)
+
+# a try
