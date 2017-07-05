@@ -3,12 +3,14 @@ import jieba
 from gensim import corpora, models, similarities
 from pre_process.generate_index_file_defs import get_stop_words
 import os
+from collections import defaultdict
+
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)  # logging events
 
 origin_file = 'comments.txt'
 dictionary_file = 'comment_dictionary.dict'
 corpus_file = 'comment_corpus.mm'
-topics_num = 10
+topics_num = 30
 lsi_file = 'comment_lsi.lsi'
 index_file = 'comment_index.index'
 stop_words_file = 'stop_words.txt'
@@ -21,13 +23,21 @@ with open(origin_file, encoding="utf-8") as f:
     for document in lines:
         # for each comment(holds one line)
         # cut words
-        words = jieba.cut(document)
+        words = list(jieba.cut(document))
         # remove stop words
-        comment_tokenized = [word for word in words if not word in stop_words]
-        if len(comment_tokenized) > 0:
-            comments.append(comment_tokenized)
+        if len(words) > 0:
+            comments.append(words)
 
-dictionary = corpora.Dictionary(comments)
+frequency = defaultdict(int)
+for comment in comments:
+    for token in comment:
+        frequency[token] += 1
+
+# remove stop words and words that appear only once
+for words in comments:
+    words = [word for word in words if word not in stop_words and frequency[word] > 1]
+
+dictionary = corpora.Dictionary(comments)  # may perform better using better dictionaries
 dictionary.save(dictionary_file)
 
 
