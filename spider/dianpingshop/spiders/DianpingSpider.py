@@ -11,6 +11,8 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+COMMENTS_MAX = 100
+
 #
 class DianpingSpider(CrawlSpider):
 
@@ -32,23 +34,20 @@ class DianpingSpider(CrawlSpider):
 
     def parse_start_url(self, response):
 
-        url = 'http://www.dianping.com/search/category/2/10'
+        #url = 'http://www.dianping.com/search/category/2/10'
 
         for lbs in self.location:
 
             for ft in self.foodtype:
                 url = 'http://www.dianping.com/search/category/2/10/%s%s' % (lbs, ft)
 
-                yield Request(url,callback=self.parse_list_first)
+                yield Request(url, callback=self.parse_list_first)
 
     def parse_list(self, response):
-
-        #item = DianpingItem()
 
         selector = Selector(response)
 
         div = selector.xpath('//div[@id="shop-all-list"]/ul/li')
-
 
         for dd in div:
             shopurls = dd.xpath('div[2]/div[1]/a[1]/@href').extract()
@@ -56,11 +55,12 @@ class DianpingSpider(CrawlSpider):
             #print info_url
             yield Request(info_url, callback=self.parse_info)
 
-    def parse_info(self,response):
+    def parse_info(self, response):
         print('Here is response!!')
         print response
         item = DianpingItem()
         selector = Selector(response)
+        #geocoder地理信息？？
 
         div = selector.xpath('//div[@id="basic-info"]')
         short_div = selector.xpath('//div[@class="breadcrumb"]')
@@ -110,6 +110,7 @@ class DianpingSpider(CrawlSpider):
 
         div_comments = selector.xpath('//ul[@class="comment-list J-list"]/li')
         comments = []
+        '''
         for comment in div_comments:
             flag = comment.xpath('div/div/@class').extract_first()
             if flag == 'photos':
@@ -122,36 +123,65 @@ class DianpingSpider(CrawlSpider):
                 if context != '':
                     print context
                     comments.append(context)
+        '''
         item['comments'] = comments
 
-        yield item
+        commenturl = selector.xpath('//p[@class="comment-all"]/a/@href')
 
-
-
+        request = Request(commenturl, callback=parse_comments_list_first)
+        request.meta['item'] = item
+        yield request
 
     def parse_list_first(self, response):
 
         selector = Selector(response)
-
-
         #########################################
         #### 获取分页
-
         pg = 0
-
         pages = selector.xpath('//div[@class="page"]/a/@data-ga-page').extract()
-
         if len(pages) > 0:
             pg = pages[len(pages) - 2]
-
-
-        pg=int(str(pg))+1
-
-
-
+        pg = int(str(pg))+1
         url = str(response.url)
-
-        for p in range(1,pg):
+        for p in range(1, pg):
             ul = url+'p'+str(p)
 
-            yield Request(ul,callback=self.parse_list)
+            yield Request(ul, callback=self.parse_list)
+
+    def parse_comments_list_first(self, response):
+        #分页
+        selector = Selector(response)
+        item = response.meta['item']
+        url = str(response.url)
+        pages = selector.xpath('//a[@class="PageLink"]').extract()
+        print pages
+        maxpage = int(pages[-1])
+        request = Request(url + 'review_more?pageno=1', callback=parse_comments_list_first)
+        request.meta['item'] = item
+        request.meta['maxpage'] = maxpage
+        request.meta['current_page'] = 1
+        request.meta['comments_num'] = 0
+        yield request
+
+    def prase_comments(self, response):
+        selector = Selector(response)
+        item = response.meta['item']
+        maxpage = response.meta['maxpage']
+        current_page = response.meta['current_page'] + 1
+        comments_num = response.meta['comments_num']
+        new_comments = selector.xpath('//div[@class=""J_brief-cont]/text()').extract()
+        for comment in new_comments:
+            item['comments'].append(comment)
+            comments_num = comments_num + 1
+            if comments_num >= COMMENTS_MAX:
+                yield item
+                return
+        if current_page+1 > maxpage:
+            yield item
+            return
+        request = Request(url + 'review_more?pageno=' + str(current_page+1), callback=parse_comments_list_first)
+        request.meta['item'] = item
+        request.meta['maxpage'] = maxpage
+        request.meta['current_page'] = current_page
+        request.meta['comments_num'] = comments_num
+        yield request
