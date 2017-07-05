@@ -2,27 +2,98 @@
 {% load bootstrap3 %}
 
 {% block content %}
-    <div class="container">
-      <div class="page-header">
-        <h1><br>{{shop.shopname}}
-        <span class="label label-warning">{{ shop.loc }}</span>
-         <span class="label label-danger">{{ shop.foodtype }}</span>
-        </h1>
-      </div>
+    <style type="text/css">
+        #like-title {
+            background-color: #d9534f;
+            font-size:20px;
+            color:whitesmoke;
+        }
+        #comments-title{
+            background-color: #f0ad4e;
+            font-size:20px;
+            color:whitesmoke;
+        }
+        #similar-shopname{
+            font-size: 16px;
+        }
 
-      <!--list brief information about restaurants-->
-      <table>
-          <tbody class="table">
-            <img src={{shop.pic}}  alt={{shop.shopname}} /><br>
-            <h4>
-                <p>地址：{{shop.street_address}}</p>
-                <p>联系电话：{{shop.tel}}</p>
-                <p>星级：{% bootstrap_icon 'star' %}{{shop.shoplevel}}</p>
-                <p>人均消费：{{ shop.avgcost }}元</p>
-                <p>评分： 口味{{ shop.taste }} | 环境{{ shop.envi }} | 服务{{ shop.service }}</p>
-            </h4>
-          </tbody>
-      </table>
+    </style>
+    <div class="container">
+        <div class="page-header">
+            <h1><br>{{shop.shopname}}
+                <span class="label label-warning">{{ shop.loc }}</span>
+                <span class="label label-danger">{{ shop.foodtype }}</span>
+            </h1>
+        </div>
+
+      <!--list information about restaurants-->
+        <div class="row">
+            <div class="col-md-9">
+                <!--info card-->
+                <div class="row">
+                    <div class="col-md-4">
+                        <img src={{shop.pic}} style="border:2px solid black" alt={{shop.shopname}} class="img-responsive" /><br>
+                    </div>
+                    <div class="col-md-8">
+                        <h4>
+                            <p>地址：{{shop.street_address}}</p>
+                            <p>联系电话：{{shop.tel}}</p>
+                            <p>星级：{{shop.shoplevel}}</p>
+                            <p>人均消费：{{ shop.avgcost }}元</p>
+                            <p>评分： 口味 {{ shop.taste }} | 环境 {{ shop.envi }} | 服务 {{ shop.service }}</p>
+                        </h4>
+                    </div><!-- /col-md-8 -->
+                </div>
+                <!--add comments-->
+                <div>
+                <h3>添加评论</h3>
+                <textarea class="form-control" rows="3" placeholder="感受&建议&吐槽……" style=" margin-bottom: 65px;"></textarea>
+                <button type="submit" class="btn btn-success green pull-right" style="margin-top: -50px;"> Share</button>
+                </div>
+                <!--comments-->
+                <div class="panel panel-default">
+                    <!-- Default panel contents -->
+                    <div class="panel-heading" id="comments-title">{% bootstrap_icon 'pushpin' %} <b>评论区</b></div>
+                    <!-- List group -->
+                    <div class="list-group">
+                        {% for comment in comments %}
+                            <li class="list-group-item">
+                                {{ comment }}
+                                <p class="list-group-item-text">
+                                    {% bootstrap_icon 'comment' %} {{ comment.content }}
+                                </p>
+                            </li>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="panel panel-default">
+                    <!-- Default panel contents -->
+                    <div class="panel-heading" id="like-title">你可能还喜欢</div>
+                    <!-- List group -->
+                    <ul class="list-group">
+                        {% for similar_shop in similar_shops %}
+                        <a href="{% url 'single_shop:single_shop' id=similar_shop.id %}" class="list-group-item">
+                            <div class="row">
+                                <div class="col-md-6" >
+                                    <img src={{similar_shop.pic}} class="img-responsive" alt={{shop.shopname}}/>
+                                </div>
+
+                                <div class="col-md-6" id="similar-shopname" style="margin-left:-15px;">
+                                    <p>{{ similar_shop.shopname }}</p>
+                                    <p>{{ similar_shop.loc }} | {{ similar_shop.foodtype }}</p>
+                                    <!--<p>{{ similar_shop.shoplevel }}</p>-->
+                                </div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
 
     </div>
 

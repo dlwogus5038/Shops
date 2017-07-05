@@ -51,7 +51,7 @@
           <tbody class="table">
           <div class="list-group">
               {% for comment in comments %}
-                  <a href="{% url 'single_shop:single_shop' id=comment.shop_id %}" class="list-group-item">{{ comment }} <!-- need to replace this with single shop's url -->
+                  <a href="{% url 'single_shop:single_shop' id=comment.shop_id %}" class="list-group-item">{{ comment }}
                       <p class="list-group-item-text">
                           {% bootstrap_icon 'comment' %}<b>{{ comment.content }}</b>
                       </p>
