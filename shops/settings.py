@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'single_shop.apps.SingleShopConfig',
     'bootstrap3',
 ]
-AUTH_USER_MODEL = 'home.User'
+AUTH_USER_MODEL = 'home.MyUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -82,7 +82,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'shops',
         'USER': 'root',
-        'PASSWORD': 'qlalfqjsgh12',
+        'PASSWORD': '1234',
     }
 }
 

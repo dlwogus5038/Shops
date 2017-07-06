@@ -1,5 +1,5 @@
 from django.contrib import auth
-from .models import User
+from .models import MyUser
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 #from .models import UserProfile,ProfileSite
@@ -30,7 +30,7 @@ def signup_submit(request):
     gender = request.POST.get('gender')
     try:
 
-        user = User.objects.create_user(username=username, password=password, email=email,gender=gender,name=name)
+        user = MyUser.objects.create_user(username=username, password=password, email=email, gender=gender, name=name)
 
         user = auth.authenticate(request, username=username, password=password)
         auth.login(request, user)
