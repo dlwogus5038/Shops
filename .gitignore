@@ -1,9 +1,12 @@
 .idea/
 __pycache__/
+migrations/
 *.pyc
 .DS_Store
-pre_process/
-!pre_process/*.py
+*.index
+*.lsi
+*.mm
+*.dict
 shops/settings.py
 pre_process.*
 *.projection

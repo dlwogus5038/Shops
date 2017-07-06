@@ -31,92 +31,6 @@ class Request_Friend(models.Model):
         verbose_name = u'给我申请的好友'
         verbose_name_plural = u"给我申请的好友"
 
-'''
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile_user')
-    name = models.CharField(u'姓名', max_length=32, blank=True, null=False , default="无名")
-    gender = models.CharField(u'性别',max_length=1, default='男')
-    latitude = models.FloatField(u'纬度',default = 40.0, null=False)
-    longitude = models.FloatField(u'经度',default = 116.33, null=False)
-
-    class Meta:
-        db_table = 'Profile'
-        verbose_name = u'用户详情'
-        verbose_name_plural = u"用户详情"
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            try:
-                p = UserProfile.objects.get(user=self.user)
-                self.pk = p.pk
-            except UserProfile.DoesNotExist:
-                pass
-        super(UserProfile, self).save(*args,**kwargs)
-
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        profile = UserProfile()
-        profile.user = instance
-        profile.save()
-
-post_save.connect(create_user_profile, sender=User)
-'''
-'''
-class Friend(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    friend_ID = models.CharField(u'好友ID', max_length=32, blank=True, null=False, default="无名")
-
-    class Meta:
-        db_table = 'Friend'
-        verbose_name = u'好友'
-        verbose_name_plural = u'好友'
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            try:
-                p = Friend.objects.get(user=self.user)
-                self.pk = p.pk
-            except Friend.DoesNotExist:
-                pass
-        super(Friend, self).save(*args,**kwargs)
-
-'''
-'''
-class ProfileSite(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    userID = models.IntegerField(default=0)
-    username = models.CharField(u'ID', max_length=32, blank=True, null=False, default="无名")
-    name = models.CharField(u'姓名', max_length=32, blank=True, null=False, default="无名")
-    email = models.EmailField(u'电子邮件地址',blank=True,null=False,default=".@.")
-    gender = models.CharField(u'性别', max_length=1, default='男')
-    latitude = models.FloatField(u'纬度', default=40.0, null=False)
-    longitude = models.FloatField(u'经度', default=116.33, null=False)
-
-    class Meta:
-        db_table = 'ProfileSite'
-        verbose_name = u'用户页面信息'
-        verbose_name_plural = u'用户页面信息'
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            try:
-                p = ProfileSite.objects.get(user=self.user)
-                self.pk = p.pk
-            except ProfileSite.DoesNotExist:
-                pass
-        super(ProfileSite, self).save(*args,**kwargs)
-
-def create_profile_site(sender, instance, created, **kwargs):
-    if created:
-        profile_site = ProfileSite()
-        profile_site.user = instance
-        profile_site.username = instance.username
-        profile_site.email = instance.email
-        profile_site.save()
-
-post_save.connect(create_profile_site, sender=User)
-
-'''
 
 class ShopManager(models.Manager):
     def get_by_natural_key(self, urlID):
@@ -173,12 +87,13 @@ class Comment(models.Model):
     see https://docs.djangoproject.com/en/1.11/topics/serialization/#natural-keys for detail
     """
     content = models.TextField(max_length=1000)
-    shop = models.ForeignKey(Shop)  # shop's urlID
-    # user = models.ForeignKey('User')  # TO DO: need to add this
+    shop = models.ForeignKey(Shop)  # shop's id
+    # user = models.ForeignKey(UserProfile)  # user's id
+    username = models.CharField(max_length=20)
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return "id: {}, 创建时间: {}, 对应店铺id: {}".format(self.id, self.created_at, self.shop_id)
+        return "id: {}, 用户: {}, 创建时间: {}, 对应店铺id: {}".format(self.id, self.username, self.created_at, self.shop_id)
 
 
 

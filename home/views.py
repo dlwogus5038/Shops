@@ -1,6 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
+
 from .models import Shop, Comment
 from .models import User, Request_Friend
 #from .models import Friend
@@ -25,21 +26,40 @@ max_ranking_list_size = 20
 
 
 def home(request):
-    if request.method == 'POST':
-        search_form = SearchForm(request.POST)
-        if search_form.is_valid():
-            search_choice = search_form.cleaned_data['search_choice']
-            sort_choice = search_form.cleaned_data['sort_choice']
-            search_input = search_form.cleaned_data["search_input"]
-            if search_choice == 'LOC' or search_choice == 'FOODTYPE':  # search by property
-                return render(request, 'home/home.html', {'search_form': search_form, 'search_choice': search_choice, 'char_input': search_input,
-                                                          'shops': search_by_property(search_choice, sort_choice, search_input)})
-            elif search_choice == 'COMMENT':  # search by content
-                comments = search_by_comment(search_input)
-                return render(request, 'home/home.html', {'search_form': search_form, 'comments': comments})
-            return render(request, 'home/home.html', {'search_form': search_form})
-    search_form = SearchForm()
-    return render(request, 'home/home.html', {'search_form': search_form})
+    locs = [x[0] for x in Shop.objects.count_occurrence('loc')]
+    foodtypes = [x[0] for x in Shop.objects.count_occurrence('foodtype')]
+    return render(request, 'home/home.html', {'locs': locs, 'foodtypes': foodtypes})
+
+
+def translate(str):
+    if str == 'loc':
+        return '商区'
+    else:
+        return '类别'
+
+
+def search_by_loc(request, **kwargs):  # e.g.{'loc': '西单', 'foodtype': '泰国菜', 'order_by': taste}
+    shops = Shop.objects.all()
+    for key, value in kwargs.items():
+        if not value == 'all' and not key == 'order_by':
+            shops = shops.filter(**{key: value})
+    shops = shops.order_by(kwargs['order_by'])
+    other_choices = [x[0] for x in Shop.objects.count_occurrence('foodtype')]
+    context = {'search_by': 'loc', 'loc': kwargs['loc'], 'foodtype': kwargs['foodtype'],
+               'order_by': kwargs['order_by'], 'shops': shops, 'other_choices': other_choices}
+    return render(request, 'home/search.html', context)
+
+
+def search_by_foodtype(request, **kwargs):
+    shops = Shop.objects.all()
+    for key, value in kwargs.items():
+        if not value == 'all' and not key == 'order_by':
+            shops = shops.filter(**{key: value})
+    shops = shops.order_by(kwargs['order_by'])
+    other_choices = [x[0] for x in Shop.objects.count_occurrence('loc')]
+    context = {'search_by': 'foodtype', 'loc': kwargs['loc'], 'foodtype': kwargs['foodtype'],
+               'order_by': kwargs['order_by'], 'shops': shops, 'other_choices': other_choices}
+    return render(request, 'home/search.html', context)
 
 
 def userprofile(request, username):
