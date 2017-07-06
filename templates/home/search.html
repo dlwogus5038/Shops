@@ -42,59 +42,45 @@
             </nav>
         </div>
 
-    <div class="panel">
-        <div class="panel-heading clearfix">
-    <div class="btn-group pull-right">
-        <a href="#" class="btn btn-default btn-sm">## Lock</a>
-        <a href="#" class="btn btn-default btn-sm">## Delete</a>
-        <a href="#" class="btn btn-default btn-sm">## Move</a>
-    </div>
-    <h4>sol2</h4>
-</div>
-
+    <!-- sort choices -->
     <div class="panel panel-default">
-    <div class="panel-heading clearfix">
-      <h4 class="panel-title pull-left" style="padding-top: 7.5px;">sol1</h4>
-      <div class="btn-group pull-right">
-        <a href="#" class="btn btn-default btn-sm">## Lock</a>
-        <a href="#" class="btn btn-default btn-sm">## Delete</a>
-        <a href="#" class="btn btn-default btn-sm">## Move</a>
-      </div>
-    </div>
-    ...
-</div>
-
-        <!-- sort choices -->
-        <div class="row">
-            <nav class="navbar navbar-default">
-                <ul class="nav navbar-nav">
-                    {% if search_by == 'loc' %}
-                        <li><a href="{% url 'home:search-by-loc' loc=loc foodtype=foodtype order_by='taste' %}">按味道</a></li>
-                        <li><a href="{% url 'home:search-by-loc' loc=loc foodtype=foodtype order_by='service' %}">按服务</a></li>
-                        <li><a href="{% url 'home:search-by-loc' loc=loc foodtype=foodtype order_by='envi' %}">按环境</a></li>
-                    {% else %}
-                        <li><a href="{% url 'home:search-by-foodtype' loc=loc foodtype=foodtype order_by='taste' %}">按味道</a></li>
-                        <li><a href="{% url 'home:search-by-foodtype' loc=loc foodtype=foodtype order_by='service' %}">按服务</a></li>
-                        <li><a href="{% url 'home:search-by-foodtype' loc=loc foodtype=foodtype order_by='envi' %}">按环境</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
-        </div> <!-- secondary choice -->
-
-        <div class="row">
-                <div class="col-sm-3 hero-feature">
-                    <div class="thumbnail">
-                        <img src="http://placehold.it/800x500" alt="">
-                        <div class="caption">
-                            <h3>Feature Label</h3>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                            <p>
-                                <a href="#" class="btn btn-primary">Buy Now!</a> <a href="#" class="btn btn-default">More Info</a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
+        <div class="panel-heading clearfix">
+            <div class="btn-group pull-right">
+                <a href="#" class="btn btn-default btn-sm">按味道</a>
+                <a href="#" class="btn btn-default btn-sm">按服务</a>
+                <a href="#" class="btn btn-default btn-sm">按环境</a>
+            </div>
+            <h4>排序</h4>
         </div>
+
+        <!-- shops -->
+        <div class="panel-body">
+            <ul class="list-group">
+                {% for shop in shops %}
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <a href="#" class="thumbnail">
+                                    <img src={{ shop.pic }} >
+                                </a>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="caption">
+                                    <h3>{{ shop.shopname }}</h3>
+                                        <p>{{ shop }}</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <p>
+                                    <a href="#" class="btn btn-primary">Buy Now!</a> <a href="#" class="btn btn-default">More Info</a>
+                                </p>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 
     </div>
     <!-- end of the block -->
