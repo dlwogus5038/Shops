@@ -93,14 +93,12 @@ def search_by_property(search_choice, sort_choice, char_input):
     return shops[:50]
 
 
-def show_statistics(request, search_choice, char_input):
-    shops = []
-    order_by = 'foodtype'
-    if search_choice == 'LOC':
-        shops = Shop.objects.filter(loc=char_input)
-    elif search_choice == 'FOODTYPE':
-        shops = Shop.objects.filter(foodtype=char_input)
-        order_by = 'loc'
+def show_statistics(request, **kwargs):
+    order_by = 'shoplevel'
+    shops = Shop.objects.all()
+    for key, value in kwargs.items():
+        if not value == 'all':
+            shops = shops.filter(**{key: value})
     shops_distinct = shops.values(order_by).distinct()
     shops = shops.values()
     statistics = {}  # a dict recording shop number for each foodtype
