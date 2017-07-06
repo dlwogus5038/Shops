@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+          <!-- breadcrumb -->
+          <ol class="breadcrumb">
+              <li><a href="{% url 'home:home' %}">首页</a></li>
+                  {% if search_by == 'loc' %} <!-- search by loc -->
+                      {% if foodtype == 'all' %} <!-- haven't chosen foodtype yet-->
+                          <li class="active">{{ loc }}</li>
+                      {% else %}
+                          <li><a href="{% url 'home:search-by-loc' loc=loc foodtype='all' order_by=order_by%}">{{ loc }}</a></li>
+                          <li class="active">{{ foodtype }}</li>
+                      {% endif %}
+                  {% else %} <!-- search by foodtype -->
+                      {% if loc == 'all' %} <!-- haven't chosen foodtype yet-->
+                          <li class="active">{{ foodtype }}</li>
+                      {% else %}
+                          <li><a href="{% url 'home:search-by-foodtype' loc='all' foodtype=foodtype order_by=order_by%}">{{ foodtype }}</a></li>
+                          <li class="active">{{ loc }}</li>
+                      {% endif %}
+                  {% endif %}
+          </ol>
+        </div>
+
+        <!-- secondary classification -->
+        <div class="row">
+            <nav class="navbar navbar-default">
+                <ul class="nav navbar-nav">
+                    {% if search_by == 'loc' %}
+                        {% for choice in other_choices %}
+                            <li><a href="{% url 'home:search-by-loc' loc=loc foodtype=choice order_by=order_by %}">{{ choice }}</a></li>
+                        {% endfor %}
+                    {% else %}
+                        {% for choice in other_choices %}
+                            <li><a href="{% url 'home:search-by-loc' loc=choice foodtype=foodtype order_by=order_by %}">{{ choice }}</a></li>
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+
+    <div class="panel">
+        <div class="panel-heading clearfix">
+    <div class="btn-group pull-right">
+        <a href="#" class="btn btn-default btn-sm">## Lock</a>
+        <a href="#" class="btn btn-default btn-sm">## Delete</a>
+        <a href="#" class="btn btn-default btn-sm">## Move</a>
+    </div>
+    <h4>sol2</h4>
+</div>
+
+    <div class="panel panel-default">
+    <div class="panel-heading clearfix">
+      <h4 class="panel-title pull-left" style="padding-top: 7.5px;">sol1</h4>
+      <div class="btn-group pull-right">
+        <a href="#" class="btn btn-default btn-sm">## Lock</a>
+        <a href="#" class="btn btn-default btn-sm">## Delete</a>
+        <a href="#" class="btn btn-default btn-sm">## Move</a>
+      </div>
+    </div>
+    ...
+</div>
+
+        <!-- sort choices -->
+        <div class="row">
+            <nav class="navbar navbar-default">
+                <ul class="nav navbar-nav">
+                    {% if search_by == 'loc' %}
+                        <li><a href="{% url 'home:search-by-loc' loc=loc foodtype=foodtype order_by='taste' %}">按味道</a></li>
+                        <li><a href="{% url 'home:search-by-loc' loc=loc foodtype=foodtype order_by='service' %}">按服务</a></li>
+                        <li><a href="{% url 'home:search-by-loc' loc=loc foodtype=foodtype order_by='envi' %}">按环境</a></li>
+                    {% else %}
+                        <li><a href="{% url 'home:search-by-foodtype' loc=loc foodtype=foodtype order_by='taste' %}">按味道</a></li>
+                        <li><a href="{% url 'home:search-by-foodtype' loc=loc foodtype=foodtype order_by='service' %}">按服务</a></li>
+                        <li><a href="{% url 'home:search-by-foodtype' loc=loc foodtype=foodtype order_by='envi' %}">按环境</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div> <!-- secondary choice -->
+
+        <div class="row">
+                <div class="col-sm-3 hero-feature">
+                    <div class="thumbnail">
+                        <img src="http://placehold.it/800x500" alt="">
+                        <div class="caption">
+                            <h3>Feature Label</h3>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                            <p>
+                                <a href="#" class="btn btn-primary">Buy Now!</a> <a href="#" class="btn btn-default">More Info</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+    </div>
+    <!-- end of the block -->
+
+
+{% endblock %}

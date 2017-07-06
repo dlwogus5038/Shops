@@ -35,9 +35,10 @@ def main():
                     if not comment_temp:
                         comment_fields['content'] = ""
                     else:
-                        comment_fields['content'] = "".join(re.compile(u"[\u4e00-\u9fa5A\w\\pP]+").findall(comment_temp))
+                        comment_fields['content'] = "".join(re.compile(u"[\u4e00-\u9fa5A\w，。！？：\"\",.!?\"\"\'\']+").findall(comment_temp))
                     comment_fields['shop'] = [shop['ID']]
-                    # TO DO: add user field
+                    comment_fields['user'] = ['大众点评网友']  # all comments captured from web belongs to the user named '匿名用户'
+                    comment_fields['username'] = '大众点评网友'
                     comment  = {}
                     comment['model'] = comment_model
                     comment['fields'] = comment_fields

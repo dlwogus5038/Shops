@@ -28,6 +28,7 @@ class UserProfile(models.Model):
                 pass
         super(UserProfile, self).save(*args,**kwargs)
 
+
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         profile = UserProfile()
@@ -35,6 +36,7 @@ def create_user_profile(sender, instance, created, **kwargs):
         profile.save()
 
 post_save.connect(create_user_profile, sender=User)
+
 
 class ProfileSite(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -59,6 +61,7 @@ class ProfileSite(models.Model):
             except ProfileSite.DoesNotExist:
                 pass
         super(ProfileSite, self).save(*args,**kwargs)
+
 
 def create_profile_site(sender, instance, created, **kwargs):
     if created:
@@ -126,12 +129,13 @@ class Comment(models.Model):
     see https://docs.djangoproject.com/en/1.11/topics/serialization/#natural-keys for detail
     """
     content = models.TextField(max_length=1000)
-    shop = models.ForeignKey(Shop)  # shop's urlID
-    # user = models.ForeignKey('User')  # TO DO: need to add this
+    shop = models.ForeignKey(Shop)  # shop's id
+    # user = models.ForeignKey(UserProfile)  # user's id
+    username = models.CharField(max_length=20)
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return "id: {}, 创建时间: {}, 对应店铺id: {}".format(self.id, self.created_at, self.shop_id)
+        return "id: {}, 用户: {}, 创建时间: {}, 对应店铺id: {}".format(self.id, self.username, self.created_at, self.shop_id)
 
 
 

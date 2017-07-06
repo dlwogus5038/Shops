@@ -2,9 +2,9 @@ from django.shortcuts import render
 
 # Create your views here.
 from .models import Shop, Comment,ProfileSite
-from .forms import SearchForm
-from django.shortcuts import redirect, get_object_or_404
-from django.contrib.auth.models import User
+# from .forms import SearchForm
+# from django.shortcuts import redirect, get_object_or_404
+# from django.contrib.auth.models import User
 import json
 import jieba
 import gensim
@@ -22,36 +22,68 @@ max_ranking_list_size = 20
 
 
 def home(request):
-    if request.method == 'POST':
-        search_form = SearchForm(request.POST)
-        if search_form.is_valid():
-            search_choice = search_form.cleaned_data['search_choice']
-            sort_choice = search_form.cleaned_data['sort_choice']
-            search_input = search_form.cleaned_data["search_input"]
-            if search_choice == 'LOC' or search_choice == 'FOODTYPE':  # search by property
-                return render(request, 'home/home.html', {'search_form': search_form, 'search_choice': search_choice, 'char_input': search_input,
-                                                          'shops': search_by_property(search_choice, sort_choice, search_input)})
-            elif search_choice == 'COMMENT':  # search by content
-                comments = search_by_comment(search_input)
-                return render(request, 'home/home.html', {'search_form': search_form, 'comments': comments})
-            return render(request, 'home/home.html', {'search_form': search_form})
-    search_form = SearchForm()
-    return render(request, 'home/home.html', {'search_form': search_form})
+    # if request.method == 'POST':
+    #     search_form = SearchForm(request.POST)
+    #     if search_form.is_valid():
+    #         search_choice = search_form.cleaned_data['search_choice']
+    #         sort_choice = search_form.cleaned_data['sort_choice']
+    #         search_input = search_form.cleaned_data["search_input"]
+    #         if search_choice == 'LOC' or search_choice == 'FOODTYPE':  # search by property
+    #             return render(request, 'home/home.html', {'search_form': search_form, 'search_choice': search_choice, 'char_input': search_input,
+    #                                                       'shops': search_by_property(search_choice, sort_choice, search_input)})
+    #         elif search_choice == 'COMMENT':  # search by content
+    #             comments = search_by_comment(search_input)
+    #             return render(request, 'home/home.html', {'search_form': search_form, 'comments': comments})
+    #         return render(request, 'home/home.html', {'search_form': search_form})
+    # search_form = SearchForm()
+    locs = [x[0] for x in Shop.objects.count_occurrence('loc')]
+    foodtypes = [x[0] for x in Shop.objects.count_occurrence('foodtype')]
+    return render(request, 'home/home.html', {'locs': locs, 'foodtypes': foodtypes})
 
 
 def userprofile(request, username):
     profile = ProfileSite.objects.get(username=username)
-    return render(request, 'home/userprofile.html', {'profile' : profile })
+    return render(request, 'home/userprofile.html', {'profile': profile })
 
 
-def search_by_property(search_choice, sort_choice, char_input):
-    shops = []  # show shop information
-    if search_choice == 'LOC':
-        shops = Shop.objects.filter(loc=char_input).order_by('-' + sort_choice.lower())
-    elif search_choice == 'FOODTYPE':
-        shops = Shop.objects.filter(foodtype=char_input).order_by('-' + sort_choice.lower())
-    return shops[:50]
+# def search(request, **search_choices):
+#     shops = search_by_property(**search_choices)
+#     other_choices = []  # e.g.[{'loc': [西单, 三里屯]}, ...]
+#     valid_fields = ['loc', 'foodtype']
+#     context = {}
+#     if search_choices['search_choice2'] in valid_fields:
+#         other_choices = [x[1] for x in Shop.objects.count_occurrence(search_choices['search_choice1'])]
 
+
+def translate(str):
+    if str == 'loc':
+        return '商区'
+    else:
+        return '类别'
+
+
+def search_by_loc(request, **kwargs):  # e.g.{'loc': '西单', 'foodtype': '泰国菜', 'order_by': taste}
+    shops = Shop.objects.all()
+    for key, value in kwargs.items():
+        if not value == 'all' and not key == 'order_by':
+            shops = shops.filter(**{key: value})
+    shops = shops.order_by(kwargs['order_by'])
+    other_choices = [x[0] for x in Shop.objects.count_occurrence('foodtype')]
+    context = {'search_by': 'loc', 'loc': kwargs['loc'], 'foodtype': kwargs['foodtype'],
+               'order_by': kwargs['order_by'], 'shops': shops, 'other_choices': other_choices}
+    return render(request, 'home/search.html', context)
+
+
+def search_by_foodtype(request, **kwargs):
+    shops = Shop.objects.all()
+    for key, value in kwargs.items():
+        if not value == 'all' and not key == 'order_by':
+            shops = shops.filter(**{key: value})
+    shops = shops.order_by(kwargs['order_by'])
+    other_choices = [x[0] for x in Shop.objects.count_occurrence('loc')]
+    context = {'search_by': 'foodtype', 'loc': kwargs['loc'], 'foodtype': kwargs['foodtype'],
+               'order_by': kwargs['order_by'], 'shops': shops, 'other_choices': other_choices}
+    return render(request, 'home/search.html', context)
 
 def show_statistics(request, search_choice, char_input):
     shops = []
