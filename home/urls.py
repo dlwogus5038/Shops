@@ -6,12 +6,12 @@ urlpatterns = [
     url(r'^$', views.home, name='home'),
     url(r'^search/loc/(?P<loc>.+)/(?P<foodtype>.+)/(?P<order_by>.+)/$', views.search_by_loc, name='search-by-loc'),
     url(r'^search/foodtype/(?P<foodtype>.+)/(?P<loc>.+)/(?P<order_by>.+)/$', views.search_by_foodtype, name='search-by-foodtype'),
+    url(r'statistics/(?P<loc>.+)/(?P<foodtype>.+)/$', views.show_statistics, name='statistics'),
 
     # auth
     url(r'^userprofile/(.+)$', views.userprofile, name='userprofile'),
     url(r'^requestfriend/(.+)$', views.requestfriend, name='requestfriend'),
     url(r'^makefriend/(.+)$', views.makefriend, name='makefriend'),
-    url(r'^statistics/(?P<search_choice>LOC|FOODTYPE)/(?P<char_input>.+)/$', views.show_statistics, name='statistics'),
     url(r'^ranking-lists/$', views.show_ranking_lists, name='ranking-lists'),
     url(r'^login$', auth_views.login, name='login'),
     url(r'^authenticate$', auth_views.authenticate, name='authenticate'),

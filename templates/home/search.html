@@ -42,59 +42,71 @@
             </nav>
         </div>
 
-    <div class="panel">
-        <div class="panel-heading clearfix">
-    <div class="btn-group pull-right">
-        <a href="#" class="btn btn-default btn-sm">## Lock</a>
-        <a href="#" class="btn btn-default btn-sm">## Delete</a>
-        <a href="#" class="btn btn-default btn-sm">## Move</a>
-    </div>
-    <h4>sol2</h4>
-</div>
-
-    <div class="panel panel-default">
-    <div class="panel-heading clearfix">
-      <h4 class="panel-title pull-left" style="padding-top: 7.5px;">sol1</h4>
-      <div class="btn-group pull-right">
-        <a href="#" class="btn btn-default btn-sm">## Lock</a>
-        <a href="#" class="btn btn-default btn-sm">## Delete</a>
-        <a href="#" class="btn btn-default btn-sm">## Move</a>
-      </div>
-    </div>
-    ...
-</div>
-
-        <!-- sort choices -->
-        <div class="row">
-            <nav class="navbar navbar-default">
-                <ul class="nav navbar-nav">
-                    {% if search_by == 'loc' %}
-                        <li><a href="{% url 'home:search-by-loc' loc=loc foodtype=foodtype order_by='taste' %}">按味道</a></li>
-                        <li><a href="{% url 'home:search-by-loc' loc=loc foodtype=foodtype order_by='service' %}">按服务</a></li>
-                        <li><a href="{% url 'home:search-by-loc' loc=loc foodtype=foodtype order_by='envi' %}">按环境</a></li>
-                    {% else %}
-                        <li><a href="{% url 'home:search-by-foodtype' loc=loc foodtype=foodtype order_by='taste' %}">按味道</a></li>
-                        <li><a href="{% url 'home:search-by-foodtype' loc=loc foodtype=foodtype order_by='service' %}">按服务</a></li>
-                        <li><a href="{% url 'home:search-by-foodtype' loc=loc foodtype=foodtype order_by='envi' %}">按环境</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
-        </div> <!-- secondary choice -->
-
-        <div class="row">
-                <div class="col-sm-3 hero-feature">
-                    <div class="thumbnail">
-                        <img src="http://placehold.it/800x500" alt="">
-                        <div class="caption">
-                            <h3>Feature Label</h3>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                            <p>
-                                <a href="#" class="btn btn-primary">Buy Now!</a> <a href="#" class="btn btn-default">More Info</a>
-                            </p>
-                        </div>
+    <div class="row">
+        <div class="col-sm-9">
+            <div class="panel panel-default">
+                <!-- sort choices -->
+                <div class="panel-heading clearfix">
+                    <div class="btn-group pull-right">
+                        {% if search_by == 'loc' %}
+                            <a href="{% url 'home:search-by-loc' loc=loc foodtype=foodtype order_by='taste' %}" class="btn btn-default btn-sm">按味道</a>
+                            <a href="{% url 'home:search-by-loc' loc=loc foodtype=foodtype order_by='service' %}" class="btn btn-default btn-sm">按服务</a>
+                            <a href="{% url 'home:search-by-loc' loc=loc foodtype=foodtype order_by='envi' %}" class="btn btn-default btn-sm">按环境</a>
+                        {% else %}
+                            <a href="{% url 'home:search-by-loc' loc=loc foodtype=foodtype order_by='taste' %}" class="btn btn-default btn-sm">按味道</a>
+                            <a href="{% url 'home:search-by-loc' loc=loc foodtype=foodtype order_by='service' %}" class="btn btn-default btn-sm">按服务</a>
+                            <a href="{% url 'home:search-by-loc' loc=loc foodtype=foodtype order_by='envi' %}" class="btn btn-default btn-sm">按环境</a>
+                        {% endif %}
                     </div>
+                    <h5>排序</h5>
                 </div>
+
+                <!-- shops -->
+                <div class="panel-body">
+                    <ul class="list-group">
+                        {% for shop in shops %}
+                            <li class="list-group-item">
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <a href="#" class="thumbnail">
+                                            <img src={{ shop.pic }} >
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="caption">
+                                            <h3>{{ shop.shopname }}</h3>
+                                                <p>{{ shop }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <p>
+                                            <a href="{% url 'single_shop:single_shop' id=shop.id %}" class="btn btn-primary">详情</a>  <!-- add shop url here -->
+                                            <a href="#" class="btn btn-default">收藏</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div> <!-- shops -->
+            </div>
         </div>
+
+        <!-- statistics -->
+        <div class="col-sm-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h5>统计信息</h5>
+                </div>
+
+                <!-- shops -->
+                <div class="panel-body">
+                    <a href="{% url 'home:statistics' loc=loc foodtype=foodtype %}" class="btn btn-default btn-sm">显示统计信息</a>
+                </div>
+            </div>
+        </div> <!-- statistics -->
+
+    </div>
 
     </div>
     <!-- end of the block -->
