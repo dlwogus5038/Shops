@@ -4,8 +4,13 @@
 {% block content %}
     <div class="container">
       <div class="page-header">
-        <h1><br>{{ profile_user.username }}的账户</h1>
+        <h1>{{ profile_user.username }}的账户</h1>
       </div>
+        <form method="post" action="" enctype="multipart/form-data" >
+            <input type="file" name="personico" />
+            <input type="submit" value="提交"/>
+        </form>
+
       <ul>
           <li>用户ID = {{ profile_user.username }}</li>
           <li>用户名 = {{ profile_user.name }}</li>

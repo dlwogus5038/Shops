@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,render_to_response
 
 # Create your views here.
 
@@ -7,8 +7,7 @@ from .models import User, Request_Friend
 #from .models import Friend
 from .forms import SearchForm
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import redirect, get_object_or_404
-from django.utils import timezone
+import os
 import json
 import jieba
 import gensim
@@ -79,9 +78,24 @@ def userprofile(request, username):
     except ObjectDoesNotExist:
         request_freinds = profile_user
 
-    return render(request, 'home/userprofile.html' ,
-                  {'profile_user' : profile_user,'friend' : friend,'profile_friends' : profile_friends
-                      ,'request_freinds' : request_freinds })
+    if request.method == "POST":
+        f = request.FILES.get('personico')
+        baseDir = os.path.dirname(os.path.abspath(__name__));
+        jpgdir = os.path.join(baseDir, 'static', 'jpg');
+
+        filename = os.path.join(jpgdir, f.name);
+        fobj = open(filename, 'wb');
+        for chrunk in f.chunks():
+            fobj.write(chrunk);
+        fobj.close();
+        return render(request, 'home/userprofile.html',
+                      {'profile_user': profile_user, 'friend': friend, 'profile_friends': profile_friends
+                          , 'request_freinds': request_freinds, 'personico': f.name})
+
+    else:
+        return render(request, 'home/userprofile.html',
+                      {'profile_user': profile_user, 'friend': friend, 'profile_friends': profile_friends
+                          , 'request_freinds': request_freinds})
 
 
 def search_by_property(search_choice, sort_choice, char_input):
@@ -173,7 +187,7 @@ def makefriend(request, username):
     request.user.save()
     #profile_user.request_friend.remove(request.user)
     #profile_user.save()
-    return render(request, 'home/makefriend.html')
+    return render(request, 'home/makefriend.html', {'profile_user' : profile_user})
 
 def requestfriend(request, username):
     profile_user = User.objects.get(username=username)
@@ -185,21 +199,7 @@ def requestfriend(request, username):
     request_friend.save()
     #profile_user.request_friend.add(user)
     #profile_user.save()
-    '''
-    try:
-        friend = user.friend.get(username = profile_user)
-    except ObjectDoesNotExist:
-        friend = user
-    try:
-        profile_friends = profile_user.friend.all()
-    except ObjectDoesNotExist:
-        profile_friends = profile_user
-    try:
-        request_freinds = profile_user.request_friend.all()
-    except ObjectDoesNotExist:
-        request_freinds = profile_user
-    '''
-    return render(request, 'home/requestfriend.html')
+    return render(request, 'home/requestfriend.html', {'profile_user' : profile_user})
 
 
 
