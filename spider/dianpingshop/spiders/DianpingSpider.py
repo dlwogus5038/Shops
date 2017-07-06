@@ -13,7 +13,7 @@ sys.setdefaultencoding('utf-8')
 
 COMMENTS_MAX = 100
 
-#
+
 class DianpingSpider(CrawlSpider):
 
     name = 'dianpingshop'
