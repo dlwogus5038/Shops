@@ -2,3 +2,8 @@
 __pycache__/
 *.pyc
 .DS_Store
+pre_process/
+!pre_process/*.py
+shops/settings.py
+pre_process.*
+*.projection

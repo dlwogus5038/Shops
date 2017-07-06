@@ -24,3 +24,4 @@ class DianpingItem(Item):
     tel = Field()
     pic = Field()
     comments = Field()
+    #commenturl = Field()
