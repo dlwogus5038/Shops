@@ -1,10 +1,14 @@
 from django.shortcuts import render
 
 # Create your views here.
-from .models import Shop, Comment,ProfileSite
-# from .forms import SearchForm
-# from django.shortcuts import redirect, get_object_or_404
-# from django.contrib.auth.models import User
+
+from .models import Shop, Comment
+from .models import User, Request_Friend
+#from .models import Friend
+from .forms import SearchForm
+from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import redirect, get_object_or_404
+from django.utils import timezone
 import json
 import jieba
 import gensim
@@ -22,37 +26,9 @@ max_ranking_list_size = 20
 
 
 def home(request):
-    # if request.method == 'POST':
-    #     search_form = SearchForm(request.POST)
-    #     if search_form.is_valid():
-    #         search_choice = search_form.cleaned_data['search_choice']
-    #         sort_choice = search_form.cleaned_data['sort_choice']
-    #         search_input = search_form.cleaned_data["search_input"]
-    #         if search_choice == 'LOC' or search_choice == 'FOODTYPE':  # search by property
-    #             return render(request, 'home/home.html', {'search_form': search_form, 'search_choice': search_choice, 'char_input': search_input,
-    #                                                       'shops': search_by_property(search_choice, sort_choice, search_input)})
-    #         elif search_choice == 'COMMENT':  # search by content
-    #             comments = search_by_comment(search_input)
-    #             return render(request, 'home/home.html', {'search_form': search_form, 'comments': comments})
-    #         return render(request, 'home/home.html', {'search_form': search_form})
-    # search_form = SearchForm()
     locs = [x[0] for x in Shop.objects.count_occurrence('loc')]
     foodtypes = [x[0] for x in Shop.objects.count_occurrence('foodtype')]
     return render(request, 'home/home.html', {'locs': locs, 'foodtypes': foodtypes})
-
-
-def userprofile(request, username):
-    profile = ProfileSite.objects.get(username=username)
-    return render(request, 'home/userprofile.html', {'profile': profile })
-
-
-# def search(request, **search_choices):
-#     shops = search_by_property(**search_choices)
-#     other_choices = []  # e.g.[{'loc': [西单, 三里屯]}, ...]
-#     valid_fields = ['loc', 'foodtype']
-#     context = {}
-#     if search_choices['search_choice2'] in valid_fields:
-#         other_choices = [x[1] for x in Shop.objects.count_occurrence(search_choices['search_choice1'])]
 
 
 def translate(str):
@@ -84,6 +60,38 @@ def search_by_foodtype(request, **kwargs):
     context = {'search_by': 'foodtype', 'loc': kwargs['loc'], 'foodtype': kwargs['foodtype'],
                'order_by': kwargs['order_by'], 'shops': shops, 'other_choices': other_choices}
     return render(request, 'home/search.html', context)
+
+
+def userprofile(request, username):
+    profile_user = User.objects.get(username=username)
+    user = request.user
+    try:
+        friend = user.friend.get(username = profile_user)
+    except ObjectDoesNotExist:
+        friend = user
+    try:
+        profile_friends = profile_user.friend.all()
+    except ObjectDoesNotExist:
+        profile_friends = profile_user
+
+    try:
+        request_freinds = profile_user.request_friend_set.all()
+    except ObjectDoesNotExist:
+        request_freinds = profile_user
+
+    return render(request, 'home/userprofile.html' ,
+                  {'profile_user' : profile_user,'friend' : friend,'profile_friends' : profile_friends
+                      ,'request_freinds' : request_freinds })
+
+
+def search_by_property(search_choice, sort_choice, char_input):
+    shops = []  # show shop information
+    if search_choice == 'LOC':
+        shops = Shop.objects.filter(loc=char_input).order_by('-' + sort_choice.lower())
+    elif search_choice == 'FOODTYPE':
+        shops = Shop.objects.filter(foodtype=char_input).order_by('-' + sort_choice.lower())
+    return shops[:50]
+
 
 def show_statistics(request, search_choice, char_input):
     shops = []
@@ -156,6 +164,42 @@ def show_ranking_lists(request):
     return render(request, 'home/ranking_lists.html', {'ranking_lists': ranking_lists})
 
 
+def makefriend(request, username):
+    profile_user = User.objects.get(username=username)
+    request.user.friend.add(profile_user)
+    request.user.save()
+
+    keyset = request.user.request_friend_set.filter(from_user = profile_user).delete()
+    request.user.save()
+    #profile_user.request_friend.remove(request.user)
+    #profile_user.save()
+    return render(request, 'home/makefriend.html')
+
+def requestfriend(request, username):
+    profile_user = User.objects.get(username=username)
+    user = request.user
+
+    request_friend = Request_Friend()
+    request_friend.to_user = profile_user
+    request_friend.from_user = user.username
+    request_friend.save()
+    #profile_user.request_friend.add(user)
+    #profile_user.save()
+    '''
+    try:
+        friend = user.friend.get(username = profile_user)
+    except ObjectDoesNotExist:
+        friend = user
+    try:
+        profile_friends = profile_user.friend.all()
+    except ObjectDoesNotExist:
+        profile_friends = profile_user
+    try:
+        request_freinds = profile_user.request_friend.all()
+    except ObjectDoesNotExist:
+        request_freinds = profile_user
+    '''
+    return render(request, 'home/requestfriend.html')
 
 
 

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'single_shop.apps.SingleShopConfig',
     'bootstrap3',
 ]
+AUTH_USER_MODEL = 'home.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -81,7 +82,11 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'shops',
         'USER': 'root',
-        'PASSWORD': '1234',
+<<<<<<< HEAD
+        'PASSWORD': 'qlalfqjsgh12',
+=======
+        'PASSWORD': 'kuaile69123',
+>>>>>>> 742533125c7d982e84d4d19158390c5c336aeb92
     }
 }
 
@@ -131,5 +136,3 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
-
-AUTH_PROFILE_MODULE = 'profiles.UserProfile'

@@ -11,6 +11,8 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+COMMENTS_MAX = 100
+
 #
 class DianpingSpider(CrawlSpider):
 
@@ -18,11 +20,13 @@ class DianpingSpider(CrawlSpider):
 
     start_urls=['http://www.dianping.com/search/category/2/10']
 
-    location=['r2580','r1471','r2578','r1466','r1470','r1469','r2078','r1489','r1488','r2579','r2871','r1475','r1467','r1481','r1465','r2583']
+    #location=['r2580','r1471','r2578','r1466','r1470','r1469','r2078','r1489','r1488','r2579','r2871','r1475','r1467','r1481','r1465','r2583']
 
-    foodtype=['g110','g132','g508','g117','g113','g112','g111','g116','g311','g114','g101','g103','g102','g104',
-'g108','g109','g3243','g26481','g115','g1783','g248','g105','g26483','g246','g106','g1845','g118','g251','g219','g1817','g1338','g250','g26482', 'g107']
+    #foodtype=['g110','g132','g508','g117','g113','g112','g111','g116','g311','g114','g101','g103','g102','g104',
+#'g108','g109','g3243','g26481','g115','g1783','g248','g105','g26483','g246','g106','g1845','g118','g251','g219','g1817','g1338','g250','g26482', 'g107']
 
+    location = ['r2580', ]
+    foodtype = ['g110', ]
 
     ## 爬取顺序:
     ## 1. 先爬取基础数据结构 location, foodtype  --> 独立
@@ -32,23 +36,20 @@ class DianpingSpider(CrawlSpider):
 
     def parse_start_url(self, response):
 
-        url = 'http://www.dianping.com/search/category/2/10'
+        #url = 'http://www.dianping.com/search/category/2/10'
 
         for lbs in self.location:
 
             for ft in self.foodtype:
                 url = 'http://www.dianping.com/search/category/2/10/%s%s' % (lbs, ft)
 
-                yield Request(url,callback=self.parse_list_first)
+                yield Request(url, callback=self.parse_list_first)
 
     def parse_list(self, response):
-
-        #item = DianpingItem()
 
         selector = Selector(response)
 
         div = selector.xpath('//div[@id="shop-all-list"]/ul/li')
-
 
         for dd in div:
             shopurls = dd.xpath('div[2]/div[1]/a[1]/@href').extract()
@@ -56,11 +57,12 @@ class DianpingSpider(CrawlSpider):
             #print info_url
             yield Request(info_url, callback=self.parse_info)
 
-    def parse_info(self,response):
+    def parse_info(self, response):
         print('Here is response!!')
         print response
         item = DianpingItem()
         selector = Selector(response)
+        #geocoder地理信息？？
 
         div = selector.xpath('//div[@id="basic-info"]')
         short_div = selector.xpath('//div[@class="breadcrumb"]')
@@ -108,8 +110,9 @@ class DianpingSpider(CrawlSpider):
         tel = div.xpath('p/span[2]/text()').extract_first()
         item['tel'] = tel
 
-        div_comments = selector.xpath('//ul[@class="comment-list J-list"]/li')
+        #div_comments = selector.xpath('//ul[@class="comment-list J-list"]/li')
         comments = []
+        '''
         for comment in div_comments:
             flag = comment.xpath('div/div/@class').extract_first()
             if flag == 'photos':
@@ -122,36 +125,73 @@ class DianpingSpider(CrawlSpider):
                 if context != '':
                     print context
                     comments.append(context)
+        '''
         item['comments'] = comments
 
-        yield item
-
-
-
+        relativeurl = str(selector.xpath('//p[@class="comment-all"]/a/@href').extract_first())
+        if relativeurl == '':
+            yield item
+        else:
+            commenturl = 'http://www.dianping.com' + relativeurl
+            request = Request(commenturl, callback=self.parse_comments_list_first)
+            request.meta['item'] = item
+            yield request
 
     def parse_list_first(self, response):
 
         selector = Selector(response)
-
-
         #########################################
         #### 获取分页
-
         pg = 0
-
         pages = selector.xpath('//div[@class="page"]/a/@data-ga-page').extract()
-
         if len(pages) > 0:
             pg = pages[len(pages) - 2]
-
-
-        pg=int(str(pg))+1
-
-
-
+        pg = int(str(pg))+1
         url = str(response.url)
-
-        for p in range(1,pg):
+        for p in range(1, pg):
             ul = url+'p'+str(p)
 
-            yield Request(ul,callback=self.parse_list)
+            yield Request(ul, callback=self.parse_list)
+
+    def parse_comments_list_first(self, response):
+        #分页
+        selector = Selector(response)
+        item = response.meta['item']
+        url = str(response.url)
+        pages = selector.xpath('//a[@class="PageLink"]/text()').extract()
+        print pages
+        if len(pages) == 0:
+            maxpage = 1
+        else:
+            maxpage = int(pages[-1])
+        request = Request(url + '?pageno=1', callback=self.parse_comments)
+        request.meta['item'] = item
+        request.meta['maxpage'] = maxpage
+        request.meta['current_page'] = 1
+        request.meta['comments_num'] = 0
+        yield request
+
+    def parse_comments(self, response):
+        selector = Selector(response)
+        currenturl = str(response.url)
+        url_len = len(currenturl)
+        item = response.meta['item']
+        maxpage = response.meta['maxpage']
+        current_page = response.meta['current_page'] + 1
+        comments_num = response.meta['comments_num']
+        new_comments = selector.xpath('//div[@class="J_brief-cont"]/text()').extract()
+        for comment in new_comments:
+            item['comments'].append(comment)
+            comments_num = comments_num + 1
+            if comments_num >= COMMENTS_MAX:
+                yield item
+                return
+        if current_page+1 > maxpage:
+            yield item
+            return
+        request = Request(currenturl[:url_len-1] + str(current_page+1), callback=self.parse_comments)
+        request.meta['item'] = item
+        request.meta['maxpage'] = maxpage
+        request.meta['current_page'] = current_page
+        request.meta['comments_num'] = comments_num
+        yield request
