@@ -4,10 +4,8 @@ from django.shortcuts import render,render_to_response
 
 from .models import Shop, Comment
 from .models import MyUser, Request_Friend
-#from .models import Friend
 from .forms import SearchForm
 from django.core.exceptions import ObjectDoesNotExist
-import os
 import json
 import jieba
 import gensim
@@ -72,30 +70,14 @@ def userprofile(request, username):
         profile_friends = profile_user.friend.all()
     except ObjectDoesNotExist:
         profile_friends = profile_user
-
     try:
         request_freinds = profile_user.request_friend_set.all()
     except ObjectDoesNotExist:
         request_freinds = profile_user
 
-    if request.method == "POST":
-        f = request.FILES.get('personico')
-        baseDir = os.path.dirname(os.path.abspath(__name__));
-        jpgdir = os.path.join(baseDir, 'static', 'jpg');
-
-        filename = os.path.join(jpgdir, f.name);
-        fobj = open(filename, 'wb');
-        for chrunk in f.chunks():
-            fobj.write(chrunk);
-        fobj.close();
-        return render(request, 'home/userprofile.html',
-                      {'profile_user': profile_user, 'friend': friend, 'profile_friends': profile_friends
-                          , 'request_freinds': request_freinds, 'personico': f.name})
-
-    else:
-        return render(request, 'home/userprofile.html',
-                      {'profile_user': profile_user, 'friend': friend, 'profile_friends': profile_friends
-                          , 'request_freinds': request_freinds})
+    return render(request, 'home/userprofile.html',
+                    {'profile_user': profile_user, 'friend': friend, 'profile_friends': profile_friends
+                        , 'request_freinds': request_freinds})
 
 
 def search_by_property(search_choice, sort_choice, char_input):

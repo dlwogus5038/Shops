@@ -13,7 +13,6 @@ urlpatterns = [
     url(r'^makefriend/(.+)$', views.makefriend, name='makefriend'),
     url(r'^statistics/(?P<search_choice>LOC|FOODTYPE)/(?P<char_input>.+)/$', views.show_statistics, name='statistics'),
     url(r'^ranking-lists/$', views.show_ranking_lists, name='ranking-lists'),
-    url(r'^userprofile/(.+)$', views.userprofile, name='userprofile'),
     url(r'^login$', auth_views.login, name='login'),
     url(r'^authenticate$', auth_views.authenticate, name='authenticate'),
     url(r'^signup$', auth_views.signup, name='signup'),

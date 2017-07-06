@@ -5,7 +5,11 @@ from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser, User, UserManager
 from django.db.models.signals import post_save
+from types import MethodType #类动态绑定方法
+import os
 
+AVATAR_ROOT = 'static/media/avatar'
+AVATAR_DEFAULT = os.path.join(AVATAR_ROOT, 'default.jpg')
 
 class MyUserManager(UserManager):  # natural key
     def get_by_natural_key(self, username):
@@ -20,6 +24,7 @@ class MyUser(AbstractUser):
     latitude = models.FloatField(u'纬度', default=40.0, null=False)
     longitude = models.FloatField(u'经度', default=116.33, null=False)
     friend = models.ManyToManyField('self', verbose_name='friend')
+    avatar = models.ImageField(upload_to=AVATAR_ROOT,default="default.jpg")
 
     class Meta:
         db_table = 'MyUser'
@@ -29,6 +34,16 @@ class MyUser(AbstractUser):
 
     def __str__(self):
         return self.username
+'''
+def get_avatar_url(self):
+    try:
+        avatar = MyUser.objects.get(user=self.id)
+        return avatar.avatar
+    except Exception as e:
+        return AVATAR_DEFAULT
+
+MyUser.get_avatar_url = MethodType(get_avatar_url, None, User)
+'''
 
 
 class Request_Friend(models.Model):
