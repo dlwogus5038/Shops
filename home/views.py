@@ -1,10 +1,13 @@
 from django.shortcuts import render
 
 # Create your views here.
-from .models import Shop, Comment,ProfileSite,MyFriend
+from .models import Shop, Comment
+from .models import User, Request_Friend
+#from .models import Friend
 from .forms import SearchForm
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, get_object_or_404
-from django.contrib.auth.models import User
+from django.utils import timezone
 import json
 import jieba
 import gensim
@@ -40,8 +43,25 @@ def home(request):
 
 
 def userprofile(request, username):
-    profile = ProfileSite.objects.get(username=username)
-    return render(request, 'home/userprofile.html', {'profile' : profile })
+    profile_user = User.objects.get(username=username)
+    user = request.user
+    try:
+        friend = user.friend.get(username = profile_user)
+    except ObjectDoesNotExist:
+        friend = user
+    try:
+        profile_friends = profile_user.friend.all()
+    except ObjectDoesNotExist:
+        profile_friends = profile_user
+
+    try:
+        request_freinds = profile_user.request_friend_set.all()
+    except ObjectDoesNotExist:
+        request_freinds = profile_user
+
+    return render(request, 'home/userprofile.html' ,
+                  {'profile_user' : profile_user,'friend' : friend,'profile_friends' : profile_friends
+                      ,'request_freinds' : request_freinds })
 
 
 def search_by_property(search_choice, sort_choice, char_input):
@@ -123,11 +143,43 @@ def show_ranking_lists(request):
         ranking_lists[category[0]] = shops.filter(foodtype=category[0])
     return render(request, 'home/ranking_lists.html', {'ranking_lists': ranking_lists})
 
-def make_friend(request, user_ID):
-    friend = MyFriend()
-    friend.user = request.user
-    friend.friend_ID = user_ID
-    friend.save()
+
+def makefriend(request, username):
+    profile_user = User.objects.get(username=username)
+    request.user.friend.add(profile_user)
+    request.user.save()
+
+    keyset = request.user.request_friend_set.filter(from_user = profile_user).delete()
+    request.user.save()
+    #profile_user.request_friend.remove(request.user)
+    #profile_user.save()
+    return render(request, 'home/makefriend.html')
+
+def requestfriend(request, username):
+    profile_user = User.objects.get(username=username)
+    user = request.user
+
+    request_friend = Request_Friend()
+    request_friend.to_user = profile_user
+    request_friend.from_user = user.username
+    request_friend.save()
+    #profile_user.request_friend.add(user)
+    #profile_user.save()
+    '''
+    try:
+        friend = user.friend.get(username = profile_user)
+    except ObjectDoesNotExist:
+        friend = user
+    try:
+        profile_friends = profile_user.friend.all()
+    except ObjectDoesNotExist:
+        profile_friends = profile_user
+    try:
+        request_freinds = profile_user.request_friend.all()
+    except ObjectDoesNotExist:
+        request_freinds = profile_user
+    '''
+    return render(request, 'home/requestfriend.html')
 
 
 

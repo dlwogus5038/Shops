@@ -3,12 +3,37 @@ from django.db import models
 # Create your models here.
 from django.utils import timezone
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
 
 
+class User(AbstractUser):
+    name = models.CharField(u'姓名', max_length=32, blank=True, null=False, default="无名")
+    gender = models.CharField(u'性别', max_length=1, default='男')
+    latitude = models.FloatField(u'纬度', default=40.0, null=False)
+    longitude = models.FloatField(u'经度', default=116.33, null=False)
+    friend = models.ManyToManyField('self', verbose_name='friend')
+
+    class Meta:
+        db_table = 'User'
+        verbose_name = u'用户'
+        verbose_name_plural = u'用户'
+
+    def __str__(self):
+        return self.username
+
+class Request_Friend(models.Model):
+    to_user = models.ForeignKey(User,on_delete=models.CASCADE)
+    from_user = models.CharField(u'好友ID', max_length=32, blank=True, null=False, default="无ID")
+
+    class Meta:
+        db_table = 'Request_Friend'
+        verbose_name = u'给我申请的好友'
+        verbose_name_plural = u"给我申请的好友"
+
+'''
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile_user')
     name = models.CharField(u'姓名', max_length=32, blank=True, null=False , default="无名")
     gender = models.CharField(u'性别',max_length=1, default='男')
     latitude = models.FloatField(u'纬度',default = 40.0, null=False)
@@ -35,18 +60,28 @@ def create_user_profile(sender, instance, created, **kwargs):
         profile.save()
 
 post_save.connect(create_user_profile, sender=User)
-
-class MyFriend(models.Model):
+'''
+'''
+class Friend(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     friend_ID = models.CharField(u'好友ID', max_length=32, blank=True, null=False, default="无名")
-    create_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
-        db_table = 'MyFriend'
+        db_table = 'Friend'
         verbose_name = u'好友'
         verbose_name_plural = u'好友'
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            try:
+                p = Friend.objects.get(user=self.user)
+                self.pk = p.pk
+            except Friend.DoesNotExist:
+                pass
+        super(Friend, self).save(*args,**kwargs)
 
+'''
+'''
 class ProfileSite(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     userID = models.IntegerField(default=0)
@@ -81,6 +116,7 @@ def create_profile_site(sender, instance, created, **kwargs):
 
 post_save.connect(create_profile_site, sender=User)
 
+'''
 
 class ShopManager(models.Manager):
     def get_by_natural_key(self, urlID):
