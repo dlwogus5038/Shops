@@ -3,11 +3,18 @@ from django.db import models
 # Create your models here.
 from django.utils import timezone
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, User, UserManager
 from django.db.models.signals import post_save
 
 
-class User(AbstractUser):
+class MyUserManager(UserManager):  # natural key
+    def get_by_natural_key(self, username):
+        return self.get(username=username)
+
+
+class MyUser(AbstractUser):
+    objects = MyUserManager()
+
     name = models.CharField(u'姓名', max_length=32, blank=True, null=False, default="无名")
     gender = models.CharField(u'性别', max_length=1, default='男')
     latitude = models.FloatField(u'纬度', default=40.0, null=False)
@@ -15,15 +22,17 @@ class User(AbstractUser):
     friend = models.ManyToManyField('self', verbose_name='friend')
 
     class Meta:
-        db_table = 'User'
+        db_table = 'MyUser'
         verbose_name = u'用户'
         verbose_name_plural = u'用户'
+        # unique_together = (('username',),)
 
     def __str__(self):
         return self.username
 
+
 class Request_Friend(models.Model):
-    to_user = models.ForeignKey(User,on_delete=models.CASCADE)
+    to_user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
     from_user = models.CharField(u'好友ID', max_length=32, blank=True, null=False, default="无ID")
 
     class Meta:
@@ -83,12 +92,12 @@ class Comment(models.Model):
     one shop may have many reviews, but one review only belongs to one shop
     same for the 'user' field
     
-    NOTE: since Comment has a foreign key referencing User, we need to add natural key handling to users' class
+    NOTE: since Comment has a foreign key referencing MyUser, we need to add natural key handling to users' class
     see https://docs.djangoproject.com/en/1.11/topics/serialization/#natural-keys for detail
     """
     content = models.TextField(max_length=1000)
     shop = models.ForeignKey(Shop)  # shop's id
-    user = models.ForeignKey(User,on_delete=models.CASCADE)  # user's id
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE)  # user's id
     username = models.CharField(max_length=20)
     created_at = models.DateTimeField(default=timezone.now)
 

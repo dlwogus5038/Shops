@@ -3,7 +3,7 @@ from django.shortcuts import render
 # Create your views here.
 
 from .models import Shop, Comment
-from .models import User, Request_Friend
+from .models import MyUser, Request_Friend
 #from .models import Friend
 from .forms import SearchForm
 from django.core.exceptions import ObjectDoesNotExist
@@ -63,7 +63,7 @@ def search_by_foodtype(request, **kwargs):
 
 
 def userprofile(request, username):
-    profile_user = User.objects.get(username=username)
+    profile_user = MyUser.objects.get(username=username)
     user = request.user
     try:
         friend = user.friend.get(username = profile_user)
@@ -165,7 +165,7 @@ def show_ranking_lists(request):
 
 
 def makefriend(request, username):
-    profile_user = User.objects.get(username=username)
+    profile_user = MyUser.objects.get(username=username)
     request.user.friend.add(profile_user)
     request.user.save()
 
@@ -176,7 +176,7 @@ def makefriend(request, username):
     return render(request, 'home/makefriend.html')
 
 def requestfriend(request, username):
-    profile_user = User.objects.get(username=username)
+    profile_user = MyUser.objects.get(username=username)
     user = request.user
 
     request_friend = Request_Friend()
