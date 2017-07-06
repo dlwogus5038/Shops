@@ -88,7 +88,7 @@ class Comment(models.Model):
     """
     content = models.TextField(max_length=1000)
     shop = models.ForeignKey(Shop)  # shop's id
-    user = models.ForeignKey(User)  # user's id
+    user = models.ForeignKey(User,on_delete=models.CASCADE)  # user's id
     username = models.CharField(max_length=20)
     created_at = models.DateTimeField(default=timezone.now)
 
