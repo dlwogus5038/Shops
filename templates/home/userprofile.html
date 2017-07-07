@@ -125,6 +125,7 @@
                         <p class="list-group-item-text">
                             {% bootstrap_icon 'comment' %} {{ comment.content }}
                         </p>
+                        <a href="{% url 'home:delete_comment_user' comment.id %}" class="btn btn-danger">删除</a>
                     </li>
                 {% endfor %}
             {% endif %}

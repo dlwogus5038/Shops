@@ -80,6 +80,9 @@
                                 <p class="list-group-item-text">
                                     <p>{% bootstrap_icon 'comment' %} {{ comment.content }}</p>
                                 </p>
+                                {% if user == comment.user %}
+                                <a href="{% url 'home:delete_comment_shop' comment.id %}" class="btn btn-danger">删除</a>
+                                {% endif %}
                             </li>
                         {% endfor %}
                     </div>

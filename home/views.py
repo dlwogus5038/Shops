@@ -236,4 +236,17 @@ def delete_friend(request, username):
     user.save()
     return redirect('home:userprofile', request.user.username)
 
+def delete_comment_user(request, comment_id):
+    user = request.user
 
+    user.comment_set.filter(id=comment_id).delete()
+    user.save()
+    return redirect('home:userprofile', request.user.username)
+
+def delete_comment_shop(request, comment_id):
+    user = request.user
+    shop = Shop.objects.get(urlID=user.last_visit_shop_id)
+
+    user.comment_set.filter(id=comment_id).delete()
+    user.save()
+    return redirect('single_shop:single_shop', shop.id)
