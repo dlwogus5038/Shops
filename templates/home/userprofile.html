@@ -26,43 +26,43 @@
                 <div>
                     {% if user != profile_user %}
                         <li class="list-group-item">
-                            <p>　用户姓名 : {{ profile_user.name }}</p>
+                            <p>　{% bootstrap_icon 'user' %} <strong>用户姓名</strong> : {{ profile_user.name }}</p>
                         </li>
                         <li class="list-group-item">
-                        <p>　用户电子邮件地址 : {{ profile_user.email }}</p>
+                        <p>　{% bootstrap_icon 'envelope' %} <strong>用户电子邮件地址</strong> : {{ profile_user.email }}</p>
                     </li>
                     <li class="list-group-item">
-                        <p>　用户性别 : {{ profile_user.gender }}</p>
+                        <p>　{% bootstrap_icon 'heart' %} <strong>用户性别</strong> : {{ profile_user.gender }}</p>
                     </li>
                     <li class="list-group-item">
-                        <p>　用户所在的位置 ( 经度 : {{ profile_user.longitude }} , 纬度 : {{ profile_user.latitude }} )</p>
+                        <p>　{% bootstrap_icon 'globe' %} <strong>用户所在的位置</strong> ( 经度 : {{ profile_user.longitude }} , 纬度 : {{ profile_user.latitude }} )</p>
                     </li>
                 {% else %}
                     <form method="POST" action="{% url 'home:change_profile' %}">
                         {% csrf_token %}
                         <li class="list-group-item">
-                            <p>　用户姓名 : {{ profile_user.name }}</p>
+                            <p>　<strong>用户姓名</strong> : {{ profile_user.name }}</p>
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span> 
                                 <input type="text" style = "width:70%" id="name" name="name" class="form-control" placeholder="修改用户姓名" required />
                             </div>
                         </li>
                         <li class="list-group-item">
-                            <p>　用户电子邮件地址 : {{ profile_user.email }}</p>
+                            <p>　<strong>用户电子邮件地址</strong> : {{ profile_user.email }}</p>
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span> 
                                 <input type="email" style = "width:70%" id="email" name="email" class="form-control" placeholder="修改用户电子邮件地址" required />
                             </div>
                         </li>
                         <li class="list-group-item">
-                            <p>　用户性别 : {{ profile_user.gender }}</p>
+                            <p>　<strong>用户性别</strong> : {{ profile_user.gender }}</p>
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-heart"></i></span> 
                                 <input type="gender" style = "width:70%" id="gender" name="gender" class="form-control" placeholder="修改用户性别" required />
                             </div>
                         </li>
                         <li class="list-group-item">
-                            <p>　用户所在的位置 ( 经度 : {{ profile_user.longitude }} , 纬度 : {{ profile_user.latitude }} )</p>
+                            <p>　<strong>用户所在的位置</strong> ( 经度 : {{ profile_user.longitude }} , 纬度 : {{ profile_user.latitude }} )</p>
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="glyphicon glyphicon-globe"></i></span> 
                                 <input type="longitude" style = "width:70%" id="longitude" name="longitude" class="form-control" placeholder="修改用户所在地方的经度" required />
@@ -82,20 +82,20 @@
             {% if profile_friends != profile_user %}
                 {% for person in profile_friends %}
                     <li class="list-group-item">
-                        <a href="{% url 'home:userprofile' person.username %}">　{{ person.username }}</a>
+                        {% bootstrap_icon 'hand-right' %}<a href="{% url 'home:userprofile' person.username %}">　{{ person.username }}</a>
                     </li>
                 {% endfor %}
             {% endif %}
             {% if user.username != profile_user.username and friend == user %}
                 <div class="panel-heading" id="title">{% bootstrap_icon 'user' %} <b>申请好友</b></div>
                 <li class="list-group-item">
-                    <a href="{% url 'home:requestfriend' profile_user.username %}">　申请好友</a>
+                    　 {% bootstrap_icon 'hand-right' %}<a href="{% url 'home:requestfriend' profile_user.username %}"> 申请好友</a>
                 </li>
             {% elif user.username == profile_user.username and profile_friends != profile_user %}
                 <div class="panel-heading" id="title">{% bootstrap_icon 'user' %} <b>删除好友</b></div>
                 {% for person in profile_friends %}
                     <li class="list-group-item">
-                        <a href="{% url 'home:delete_friend' person.username %}">　从好友列表中删除"{{ person.username }}"</a>
+                        　 {% bootstrap_icon 'hand-right' %}<a href="{% url 'home:delete_friend' person.username %}"> 从好友列表中删除"{{ person.username }}"</a>
                     </li>
                 {% endfor %}
             {% endif %}
@@ -103,7 +103,7 @@
                 <div class="panel-heading" id="title">{% bootstrap_icon 'user' %} <b>好友申请列表</b></div>
                 {% for person in request_freinds %}
                     <li class="list-group-item">
-                        <a href="{% url 'home:makefriend' person.from_user %}">　接受{{ person.from_user }}的好友申请</a>
+                        　 {% bootstrap_icon 'hand-right' %}<a href="{% url 'home:makefriend' person.from_user %}"> 接受{{ person.from_user }}的好友申请</a>
                     </li>
                 {% endfor %}
             {% endif %}
@@ -111,7 +111,7 @@
             {% if collect_shops != profile_user %}
                 {% for shop in collect_shops %}
                     <li class="list-group-item">
-                        <a href="{% url 'single_shop:single_shop' shop.id %}">　{{ shop.shopname }}</a>
+                        　 {% bootstrap_icon 'hand-right' %}<a href="{% url 'single_shop:single_shop' shop.id %}"> {{ shop.shopname }}</a>
                     </li>
                 {% endfor %}
             {% endif %}
@@ -146,8 +146,8 @@
                                 </div>
 
                                 <div class="col-md-6" id="similar-shopname" style="margin-left:-15px;">
-                                    <p>{{ similar_shop.shopname }}</p>
-                                    <p>{{ similar_shop.loc }} | {{ similar_shop.foodtype }}</p>
+                                    <p>{% bootstrap_icon 'home' %} {{ similar_shop.shopname }}</p>
+                                    <p>{% bootstrap_icon 'th-list' %} {{ similar_shop.loc }} | {{ similar_shop.foodtype }}</p>
                                     <!--<p>{{ similar_shop.shoplevel }}</p>-->
                                 </div>
                             </div>
