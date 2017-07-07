@@ -6,6 +6,7 @@ from .models import Shop, Comment
 from .models import MyUser, Request_Friend
 from .forms import SearchForm
 from django.core.exceptions import ObjectDoesNotExist
+from single_shop.views import get_similar_shops
 import json
 import jieba
 import gensim
@@ -83,9 +84,12 @@ def userprofile(request, username):
     except ObjectDoesNotExist:
         comments = profile_user
 
+    like_shop = Shop.objects.get(urlID=profile_user.last_visit_shop_id)
+
     return render(request, 'home/userprofile.html',
                     {'profile_user': profile_user, 'friend': friend, 'profile_friends': profile_friends
-                        , 'request_freinds': request_freinds , 'collect_shops' : collect_shops, 'comments' : comments })
+                        , 'request_freinds': request_freinds , 'collect_shops' : collect_shops, 'comments' : comments
+                     , 'similar_shops': get_similar_shops(like_shop)})
 
 
 def search_by_property(search_choice, sort_choice, char_input):
@@ -197,7 +201,7 @@ def collectshop(request, shop_id):
     user.collect_shop.add(shop)
     user.save()
     #request.session['login_from'] = request.META.get('HTTP_REFERER', '/')
-    return render(request, 'home/collectshop.html')
+    return render(request, 'home/collectshop.html', {'shop_id' : shop_id})
 
 
 def cancelshop(request, shop_id):

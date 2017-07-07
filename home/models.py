@@ -72,6 +72,7 @@ class MyUser(AbstractUser):
     friend = models.ManyToManyField('self', verbose_name='friend')
     avatar = models.ImageField(upload_to=AVATAR_ROOT,default="default.jpg")
     collect_shop = models.ManyToManyField(Shop, verbose_name="收藏店铺列表")
+    last_visit_shop_id = models.IntegerField(default=19455366)
 
     class Meta:
         db_table = 'MyUser'
@@ -81,16 +82,6 @@ class MyUser(AbstractUser):
 
     def __str__(self):
         return self.username
-'''
-def get_avatar_url(self):
-    try:
-        avatar = MyUser.objects.get(user=self.id)
-        return avatar.avatar
-    except Exception as e:
-        return AVATAR_DEFAULT
-
-MyUser.get_avatar_url = MethodType(get_avatar_url, None, User)
-'''
 
 
 class Request_Friend(models.Model):

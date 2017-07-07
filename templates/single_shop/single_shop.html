@@ -44,6 +44,8 @@
                         {% if user.is_authenticated %}
                             {% if user_shop != user %}
                                 <a href="{% url 'home:cancelshop' shop.id %}" class="btn btn-default">取消收藏</a>
+                            {% else %}
+                                <a href="{% url 'home:collectshop' shop.id %}" class="btn btn-default">收藏</a>
                             {% endif %}
                         {% endif %}
                         </h4>

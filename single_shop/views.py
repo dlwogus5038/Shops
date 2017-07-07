@@ -20,6 +20,10 @@ def single_shop(request, id):
             user_shop = user.collect_shop.get(id=shop.id)
         except ObjectDoesNotExist:
             user_shop = user
+
+        user.last_visit_shop_id = shop.urlID
+        user.save()
+
         if request.method == 'POST':
             form = CommentForm(request.POST)
             if form.is_valid():
