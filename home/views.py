@@ -1,4 +1,4 @@
-from django.shortcuts import render,render_to_response
+from django.shortcuts import render,render_to_response,redirect
 
 # Create your views here.
 
@@ -74,10 +74,14 @@ def userprofile(request, username):
         request_freinds = profile_user.request_friend_set.all()
     except ObjectDoesNotExist:
         request_freinds = profile_user
+    try:
+        collect_shops = profile_user.collect_shop.all()
+    except ObjectDoesNotExist:
+        collect_shops = profile_user
 
     return render(request, 'home/userprofile.html',
                     {'profile_user': profile_user, 'friend': friend, 'profile_friends': profile_friends
-                        , 'request_freinds': request_freinds})
+                        , 'request_freinds': request_freinds , 'collect_shops' : collect_shops })
 
 
 def search_by_property(search_choice, sort_choice, char_input):
@@ -182,9 +186,46 @@ def requestfriend(request, username):
     return render(request, 'home/requestfriend.html', {'profile_user' : profile_user})
 
 
+def collectshop(request, shop_id):
+    shop = Shop.objects.get(id=shop_id)
+    user = request.user
+
+    user.collect_shop.add(shop)
+    user.save()
+    #request.session['login_from'] = request.META.get('HTTP_REFERER', '/')
+    return render(request, 'home/collectshop.html')
 
 
+def cancelshop(request, shop_id):
+    shop = Shop.objects.get(id=shop_id)
+    user = request.user
 
+    user.collect_shop.remove(shop)
+    user.save()
+    return render(request, 'home/cancelshop.html')
 
+def change_profile(request):
+    name = request.POST.get('name')
+    email = request.POST.get('email')
+    gender = request.POST.get('gender')
+    longitude = request.POST.get('longitude')
+    latitude = request.POST.get('latitude')
+
+    request.user.name = name
+    request.user.email = email
+    request.user.gender = gender
+    request.user.longitude = longitude
+    request.user.latitude = latitude
+    request.user.save()
+
+    return redirect('home:userprofile', request.user.username)
+
+def delete_friend(request, username):
+    friend = MyUser.objects.get(username = username)
+    user = request.user
+
+    user.friend.remove(friend)
+    user.save()
+    return redirect('home:userprofile', request.user.username)
 
 

@@ -2,6 +2,7 @@ from django.contrib import auth
 from .models import MyUser
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.contrib import messages
 #from .models import UserProfile,ProfileSite
 
 

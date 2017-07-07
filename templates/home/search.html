@@ -81,7 +81,9 @@
                                     <div class="col-sm-3">
                                         <p>
                                             <a href="{% url 'single_shop:single_shop' id=shop.id %}" class="btn btn-primary">详情</a>  <!-- add shop url here -->
-                                            <a href="#" class="btn btn-default">收藏</a>
+                                            {% if user.is_authenticated %}
+                                            <a href="{% url 'home:collectshop' shop.id %}" class="btn btn-default">收藏</a>
+                                            {% endif %}
                                         </p>
                                     </div>
                                 </div>

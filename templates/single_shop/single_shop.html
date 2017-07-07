@@ -32,7 +32,7 @@
                 <!--info card-->
                 <div class="row">
                     <div class="col-md-4">
-                        <img src={{shop.pic}} style="border:2px solid black" alt={{shop.shopname}} class="img-responsive" /><br>
+                        <img src={{shop.pic}} style="border:2px solid black alt={{shop.shopname}} class="img-responsive" /><br>
                     </div>
                     <div class="col-md-8">
                         <h4>
@@ -41,14 +41,33 @@
                             <p>星级：{{shop.shoplevel}}</p>
                             <p>人均消费：{{ shop.avgcost }}元</p>
                             <p>评分： 口味 {{ shop.taste }} | 环境 {{ shop.envi }} | 服务 {{ shop.service }}</p>
+                        {% if user.is_authenticated %}
+                            {% if user_shop != user %}
+                                <a href="{% url 'home:cancelshop' shop.id %}" class="btn btn-default">取消收藏</a>
+                            {% endif %}
+                        {% endif %}
                         </h4>
                     </div><!-- /col-md-8 -->
                 </div>
                 <!--add comments-->
                 <div>
                 <h3>添加评论</h3>
-                <textarea class="form-control" rows="3" placeholder="感受&建议&吐槽……" style=" margin-bottom: 65px;"></textarea>
-                <button type="submit" class="btn btn-success green pull-right" style="margin-top: -50px;"> Share</button>
+                    <script language="javascript">
+                         function update(){
+                             var a=document.getElementById("ctext").value;
+
+
+                             alert(a);
+                         }
+                     </script>
+                {% if user.is_authenticated %}
+                    <textarea id="ctext" class="form-control" rows="3" placeholder="感受&建议&吐槽……" style=" margin-bottom: 65px;"></textarea>
+                {% else %}
+                    <textarea id="ctext" class="form-control" rows="3" placeholder="登录之后才能发表评论" style=" margin-bottom: 65px;"></textarea>
+                {% endif %}
+                    {% if user.is_authenticated %}
+                <button type="submit" class="btn btn-success green pull-right" style="margin-top: -50px;" onclick="update()"> 发表</button>
+                    {% endif %}
                 </div>
                 <!--comments-->
                 <div class="panel panel-default">

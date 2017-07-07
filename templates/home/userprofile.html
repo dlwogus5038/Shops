@@ -2,40 +2,118 @@
 {% load bootstrap3 %}
 
 {% block content %}
+    <style type="text/css">
+        #title{
+            background-color: #000000;
+            font-size:20px;
+            color:whitesmoke;
+        }
+    </style>
     <div class="container">
       <div class="page-header">
-          <h1><img src="/static/media/avatar/default.jpg" width="100px" height="100px" alt="头像" />
+          <h1><img src="/static/media/avatar/default.jpg" width="150px" height="150px" alt="头像" />
           {{ profile_user.username }}的账户</h1>
       </div>
+    <!--
         <form method="post" action="" enctype="multipart/form-data" >
             <input type="file" name="personico" />
             <input type="submit" value="提交"/>
         </form>
-
-      <ul>
-          <li>用户ID = {{ profile_user.username }}</li>
-          <li>用户名 = {{ profile_user.name }}</li>
-          <li>用户电子邮件地址 = {{ profile_user.email }}</li>
-          <li>用户性别 = {{ profile_user.gender }}</li>
-          <li>用户所在的位置 ( 经度 = {{ profile_user.longitude }} , 纬度 = {{ profile_user.latitude }} )</li>
-          {% if user.username != profile_user.username and friend == user %}
-              <li role="presentation">
-                  <a href="{% url 'home:requestfriend' profile_user.username %}">申请好友</a>
-          {% endif %}
-          <li>好友列表 :</li>
+        -->
+      <div class="panel-heading" id="title">{% bootstrap_icon 'user' %} <b>个人信息</b></div>
+        <div>
+            {% if user != profile_user %}
+            <li class="list-group-item">
+                <p>　用户姓名 : {{ profile_user.name }}</p>
+            </li>
+            <li class="list-group-item">
+                <p>　用户电子邮件地址 : {{ profile_user.email }}</p>
+            </li>
+            <li class="list-group-item">
+                <p>　用户性别 : {{ profile_user.gender }}</p>
+            </li>
+            <li class="list-group-item">
+                <p>　用户所在的位置 ( 经度 : {{ profile_user.longitude }} , 纬度 : {{ profile_user.latitude }} )</p>
+            </li>
+            {% else %}
+                <form method="POST" action="{% url 'home:change_profile' %}">
+                    {% csrf_token %}
+                <li class="list-group-item">
+                    <p>　用户姓名 : {{ profile_user.name }}</p>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span> 
+                        <input type="text" style = "width:38%" id="name" name="name" class="form-control" placeholder="修改用户姓名" required />
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <p>　用户电子邮件地址 : {{ profile_user.email }}</p>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span> 
+                        <input type="email" style = "width:38%" id="email" name="email" class="form-control" placeholder="修改用户电子邮件地址" required />
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <p>　用户性别 : {{ profile_user.gender }}</p>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-heart"></i></span> 
+                        <input type="gender" style = "width:38%" id="gender" name="gender" class="form-control" placeholder="修改用户性别" required />
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <p>　用户所在的位置 ( 经度 : {{ profile_user.longitude }} , 纬度 : {{ profile_user.latitude }} )</p>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-globe"></i></span> 
+                        <input type="longitude" style = "width:38%" id="longitude" name="longitude" class="form-control" placeholder="修改用户所在地方的经度" required />
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-globe"></i></span> 
+                        <input type="latitude" style = "width:38%" id="latitude" name="latitude" class="form-control" placeholder="修改用户所在地方的纬度" required />
+                    </div>
+                </li>
+                <ul><ul><ul><ul><ul><ul><ul><ul><ul><ul><ul><ul><ul><ul><ul><ul><ul><ul><ul><ul><ul><ul><ul><ul><ul><ul><ul>
+                <button type="submit" class="btn btn-primary">修改</button>
+                </ul></ul></ul></ul></ul></ul></ul></ul></ul></ul></ul></ul></ul></ul></ul></ul></ul></ul></ul></ul></ul></ul></ul></ul></ul></ul></ul>
+                </form>
+            {% endif %}
+        </div>
+        <div class="panel-heading" id="title">{% bootstrap_icon 'user' %} <b>好友列表</b></div>
           {% if profile_friends != profile_user %}
               {% for person in profile_friends %}
-                  <li role="presentation">
-                      <a href="{% url 'home:userprofile' person.username %}">{{ person.username }}的个人账户</a>
+                  <li class="list-group-item">
+                      <a href="{% url 'home:userprofile' person.username %}">　{{ person.username }}</a>
+                  </li>
               {% endfor %}
           {% endif %}
+              {% if user.username != profile_user.username and friend == user %}
+                  <div class="panel-heading" id="title">{% bootstrap_icon 'user' %} <b>申请好友</b></div>
+                  <li class="list-group-item">
+                      <a href="{% url 'home:requestfriend' profile_user.username %}">　申请好友</a>
+                  </li>
+              {% elif user.username == profile_user.username and profile_friends != profile_user %}
+                  <div class="panel-heading" id="title">{% bootstrap_icon 'user' %} <b>删除好友</b></div>
+                  {% for person in profile_friends %}
+                  <li class="list-group-item">
+                      <a href="{% url 'home:delete_friend' person.username %}">　从好友列表中删除"{{ person.username }}"</a>
+                  </li>
+                  {% endfor %}
+              {% endif %}
           {% if request_freinds != profile_user and profile_user == user%}
-              <li>好友申请列表 :</li>
+              <div class="panel-heading" id="title">{% bootstrap_icon 'user' %} <b>好友申请列表</b></div>
               {% for person in request_freinds %}
-                  <li role="presentation">
-                      <a href="{% url 'home:makefriend' person.from_user %}">{{ person.from_user }}的好友申请</a>
+                  <li class="list-group-item">
+                    <a href="{% url 'home:makefriend' person.from_user %}">　接受{{ person.from_user }}的好友申请</a>
+                  </li>
               {% endfor %}
           {% endif %}
-      </ul>
+        <div class="panel-heading" id="title">{% bootstrap_icon 'user' %} <b>收藏店铺列表</b></div>
+          {% if collect_shops != profile_user %}
+              {% for shop in collect_shops %}
+                  <li class="list-group-item">
+                    <a href="{% url 'single_shop:single_shop' shop.id %}">　{{ shop.shopname }}</a>
+                  </li>
+              {% endfor %}
+          {% endif %}
+            </li>
+        </h5>
     </div>
 {% endblock %}

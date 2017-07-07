@@ -11,50 +11,6 @@ import os
 AVATAR_ROOT = 'static/media/avatar'
 AVATAR_DEFAULT = os.path.join(AVATAR_ROOT, 'default.jpg')
 
-class MyUserManager(UserManager):  # natural key
-    def get_by_natural_key(self, username):
-        return self.get(username=username)
-
-
-class MyUser(AbstractUser):
-    objects = MyUserManager()
-
-    name = models.CharField(u'姓名', max_length=32, blank=True, null=False, default="无名")
-    gender = models.CharField(u'性别', max_length=1, default='男')
-    latitude = models.FloatField(u'纬度', default=40.0, null=False)
-    longitude = models.FloatField(u'经度', default=116.33, null=False)
-    friend = models.ManyToManyField('self', verbose_name='friend')
-    avatar = models.ImageField(upload_to=AVATAR_ROOT,default="default.jpg")
-
-    class Meta:
-        db_table = 'MyUser'
-        verbose_name = u'用户'
-        verbose_name_plural = u'用户'
-        # unique_together = (('username',),)
-
-    def __str__(self):
-        return self.username
-'''
-def get_avatar_url(self):
-    try:
-        avatar = MyUser.objects.get(user=self.id)
-        return avatar.avatar
-    except Exception as e:
-        return AVATAR_DEFAULT
-
-MyUser.get_avatar_url = MethodType(get_avatar_url, None, User)
-'''
-
-
-class Request_Friend(models.Model):
-    to_user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
-    from_user = models.CharField(u'好友ID', max_length=32, blank=True, null=False, default="无ID")
-
-    class Meta:
-        db_table = 'Request_Friend'
-        verbose_name = u'给我申请的好友'
-        verbose_name_plural = u"给我申请的好友"
-
 
 class ShopManager(models.Manager):
     def get_by_natural_key(self, urlID):
@@ -99,6 +55,52 @@ class Shop(models.Model):
 
     def __str__(self):
         return "{}: id: {}, 位置: {}, 分类: {}".format(self.shopname, self.id, self.loc, self.foodtype)
+
+
+class MyUserManager(UserManager):  # natural key
+    def get_by_natural_key(self, username):
+        return self.get(username=username)
+
+
+class MyUser(AbstractUser):
+    objects = MyUserManager()
+
+    name = models.CharField(u'姓名', max_length=32, blank=True, null=False, default="无名")
+    gender = models.CharField(u'性别', max_length=1, default='男')
+    latitude = models.FloatField(u'纬度', default=40.0, null=False)
+    longitude = models.FloatField(u'经度', default=116.33, null=False)
+    friend = models.ManyToManyField('self', verbose_name='friend')
+    avatar = models.ImageField(upload_to=AVATAR_ROOT,default="default.jpg")
+    collect_shop = models.ManyToManyField(Shop, verbose_name="收藏店铺列表")
+
+    class Meta:
+        db_table = 'MyUser'
+        verbose_name = u'用户'
+        verbose_name_plural = u'用户'
+        # unique_together = (('username',),)
+
+    def __str__(self):
+        return self.username
+'''
+def get_avatar_url(self):
+    try:
+        avatar = MyUser.objects.get(user=self.id)
+        return avatar.avatar
+    except Exception as e:
+        return AVATAR_DEFAULT
+
+MyUser.get_avatar_url = MethodType(get_avatar_url, None, User)
+'''
+
+
+class Request_Friend(models.Model):
+    to_user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+    from_user = models.CharField(u'好友ID', max_length=32, blank=True, null=False, default="无ID")
+
+    class Meta:
+        db_table = 'Request_Friend'
+        verbose_name = u'给我申请的好友'
+        verbose_name_plural = u"给我申请的好友"
 
 
 class Comment(models.Model):
