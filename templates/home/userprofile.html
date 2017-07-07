@@ -82,7 +82,7 @@
             {% if profile_friends != profile_user %}
                 {% for person in profile_friends %}
                     <li class="list-group-item">
-                        {% bootstrap_icon 'hand-right' %}<a href="{% url 'home:userprofile' person.username %}">　{{ person.username }}</a>
+                        　 {% bootstrap_icon 'hand-right' %}<a href="{% url 'home:userprofile' person.username %}"> {{ person.username }}</a>
                     </li>
                 {% endfor %}
             {% endif %}
