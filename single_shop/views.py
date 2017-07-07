@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 
 # Create your views here.
 from django.http import HttpResponse
@@ -7,6 +7,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django import forms
 import json
 #from home.views import search_by_property
+import jieba
+import gensim
+from .forms import CommentForm
 
 
 def single_shop(request, id):
@@ -17,12 +20,24 @@ def single_shop(request, id):
             user_shop = user.collect_shop.get(id=shop.id)
         except ObjectDoesNotExist:
             user_shop = user
+        if request.method == 'POST':
+            form = CommentForm(request.POST)
+            if form.is_valid():
+                comment = form.cleaned_data['comment']
+                add_comment(user,comment,id)
+                #update_index_files(comment)
+                return render(request, 'single_shop/single_shop.html',
+                              {'shop': shop, 'comments': get_comments(id),
+                               'similar_shops': get_similar_shops(shop), 'form': form, 'user_shop': user_shop})
+
+        form = CommentForm()
         return render(request, 'single_shop/single_shop.html',
                       {'shop': shop, 'comments': get_comments(id), 'similar_shops': get_similar_shops(shop)
-                          , 'user_shop': user_shop})
+                          , 'user_shop': user_shop, 'form': form})
     else:
         return render(request, 'single_shop/single_shop.html',
-                      {'shop': shop, 'comments': get_comments(id), 'similar_shops': get_similar_shops(shop)})
+                      {'shop': shop, 'comments': get_comments(id),
+                       'similar_shops': get_similar_shops(shop)})
 
     #if request.method == 'POST':
     #    pass
@@ -51,21 +66,39 @@ def get_similar_shops(shop):
             break
     return result
 
-
-def makecomment(request, shop_id, text):
-    content = text
-    shop = Shop.objects.get(id=shop_id)
-    user = request.user
+def add_comment(user,comment,id):
+    """
+    by shangming
+    this function is called when a user added a comment, we need to update database and index files
+    """
+    #  TO DO: insert comment to database here
+    shop = get_shop_by_id(id)
     username = user.username
-
 
     user_comment = Comment()
     user_comment.shop = shop
     user_comment.user = user
     user_comment.username = username
-    user_comment.content = content
+    user_comment.content = comment
     user_comment.save()
+    # TO DO: add the comment and comment id into comments.txt and comment_ids.txt
 
-    return render(request, 'single_shop/makecomment.html')
+    pass
+
+
+def update_index_files(doc):
+    """
+    by shangming
+    """
+    # pre-procession
+    words = jieba.cut(doc)
+    # stop_words_list = get_stop_words(stop_words_file)
+    # words = [word for word in words if not word in stop_words_list]
+    dictionary = gensim.corpora.Dictionary.load(dictionary_file)
+    new_corpus = [dictionary.doc2bow(words)]
+    lsi = gensim.models.LsiModel.load(lsi_file)
+    lsi.add_documents(new_corpus)
+    lsi.save(lsi_file)
+    # print("saved lsi file")
 
 

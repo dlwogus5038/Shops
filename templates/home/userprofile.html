@@ -113,6 +113,18 @@
                   </li>
               {% endfor %}
           {% endif %}
+        {% if comments != user and profile_user == user %}
+            <div class="panel-heading" id="title">{% bootstrap_icon 'user' %} <b>所有用户发表的评论</b></div>
+            {% for comment in comments %}
+                <li class="list-group-item">
+                    {{ comment }}
+                    <p class="list-group-item-text">
+                        {% bootstrap_icon 'comment' %} {{ comment.content }}
+                    </p>
+                </li>
+            {% endfor %}
+        {% endif %}
+        </div>
             </li>
         </h5>
     </div>

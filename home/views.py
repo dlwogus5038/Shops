@@ -78,10 +78,14 @@ def userprofile(request, username):
         collect_shops = profile_user.collect_shop.all()
     except ObjectDoesNotExist:
         collect_shops = profile_user
+    try:
+        comments = profile_user.comment_set.all()
+    except ObjectDoesNotExist:
+        comments = profile_user
 
     return render(request, 'home/userprofile.html',
                     {'profile_user': profile_user, 'friend': friend, 'profile_friends': profile_friends
-                        , 'request_freinds': request_freinds , 'collect_shops' : collect_shops })
+                        , 'request_freinds': request_freinds , 'collect_shops' : collect_shops, 'comments' : comments })
 
 
 def search_by_property(search_choice, sort_choice, char_input):
@@ -202,7 +206,7 @@ def cancelshop(request, shop_id):
 
     user.collect_shop.remove(shop)
     user.save()
-    return render(request, 'home/cancelshop.html')
+    return redirect('single_shop:single_shop', shop_id)
 
 def change_profile(request):
     name = request.POST.get('name')
