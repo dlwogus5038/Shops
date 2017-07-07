@@ -11,28 +11,28 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-COMMENTS_MAX = 100
+COMMENTS_MAX = 10
 
-#
+
 class DianpingSpider(CrawlSpider):
 
     name = 'dianpingshop'
 
     start_urls=['http://www.dianping.com/search/category/2/10']
 
-    #location=['r2580','r1471','r2578','r1466','r1470','r1469','r2078','r1489','r1488','r2579','r2871','r1475','r1467','r1481','r1465','r2583']
+    #########不用啦这个location=['r2580','r1471','r2578','r1466','r1470','r1469','r2078','r1489','r1488','r2579','r2871','r1475','r1467','r1481','r1465','r2583']
 
-    #foodtype=['g110','g132','g508','g117','g113','g112','g111','g116','g311','g114','g101','g103','g102','g104',
-#'g108','g109','g3243','g26481','g115','g1783','g248','g105','g26483','g246','g106','g1845','g118','g251','g219','g1817','g1338','g250','g26482', 'g107']
+    #foodtype = ['g110','g132','g508','g117','g113','g112','g111','g116','g311','g114','g101','g103','g102','g104',
+    #        'g108', 'g109','g3243','g26481','g115','g1783','g248','g105','g26483','g246','g106','g1845','g118','g251','g219','g1817','g1338','g250','g26482', 'g107']
 
-    location = ['r2580', ]
+    #location = ['r14', 'r17', 'r15', 'r16', 'r20', 'r5952', 'r5950', 'r5951', 'r328', 'r9158', 'r27615', 'r9157', 'r27614', 'r27616', 'c434', 'c435' ]
     foodtype = ['g110', ]
+    location = ['r14', ]
 
     ## 爬取顺序:
     ## 1. 先爬取基础数据结构 location, foodtype  --> 独立
     ## 2. 根据基础数据组合出要爬取的 url , 即某一地区某菜系的所有商户页面
-    ##    2.1  抓取这个页面有多少 分页 数据
-    ##    2.2
+    ##    抓取这个页面有多少 分页 数据
 
     def parse_start_url(self, response):
 
@@ -127,6 +127,13 @@ class DianpingSpider(CrawlSpider):
                     comments.append(context)
         '''
         item['comments'] = comments
+
+        long_info = selector.xpath('//body[@id="top"]/script[2]/text()')
+        #print long_info.extract_first()
+        lng = long_info.re(r'shopGlng:"[0-9]*.[0-9]*"')
+        lat = long_info.re(r'shopGlat: "[0-9]*.[0-9]*"')
+        item['lng'] = lng
+        item['lat'] = lat
 
         relativeurl = str(selector.xpath('//p[@class="comment-all"]/a/@href').extract_first())
         if relativeurl == '':
