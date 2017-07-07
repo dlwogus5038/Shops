@@ -57,8 +57,10 @@
                         <h3>添加评论</h3>
                         <form action="{% url 'single_shop:single_shop' id=shop.id %}" method="post">
                             {% csrf_token %}
-                            {{ form }}
-                            <input type="submit" value="Share"/>
+                            <div class="list-group">
+                            {%  bootstrap_form form %}
+                            <input type="submit" class="btn btn-success green" value="Share"/>
+                            </div>
                         </form>
                     {% else %}
                         <h3>　登录之后可以添加评论</h3>
