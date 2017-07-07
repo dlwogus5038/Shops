@@ -119,7 +119,9 @@
                 <div class="panel-heading" id="title">{% bootstrap_icon 'user' %} <b>所有用户发表的评论</b></div>
                 {% for comment in comments %}
                     <li class="list-group-item">
-                        {{ comment }}
+                        <p>{% bootstrap_icon 'user' %} {{ comment.username }}　{% bootstrap_icon 'home' %}
+                            <a href="{% url 'single_shop:single_shop' comment.shop.id %}"> {{ comment.shop.shopname }}</a>　
+                                {% bootstrap_icon 'time' %} {{ comment.created_at }}</p>
                         <p class="list-group-item-text">
                             {% bootstrap_icon 'comment' %} {{ comment.content }}
                         </p>

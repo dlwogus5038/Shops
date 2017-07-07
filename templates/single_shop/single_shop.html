@@ -72,9 +72,11 @@
                     <div class="list-group">
                         {% for comment in comments %}
                             <li class="list-group-item">
-                                {{ comment }}
+                                <p>{% bootstrap_icon 'user' %}<a href="{% url 'home:userprofile' comment.username %}"> {{ comment.username }}</a>
+                                    　{% bootstrap_icon 'home' %} {{ comment.shop.shopname }}　
+                                {% bootstrap_icon 'time' %} {{ comment.created_at }}</p>
                                 <p class="list-group-item-text">
-                                    {% bootstrap_icon 'comment' %} {{ comment.content }}
+                                    <p>{% bootstrap_icon 'comment' %} {{ comment.content }}</p>
                                 </p>
                             </li>
                         {% endfor %}
